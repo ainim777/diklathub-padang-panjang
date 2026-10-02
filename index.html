@@ -197,6 +197,12 @@ border:7px solid white;outline:1px solid #D9DDD9}
  .cert-preview{outline:none;border:6px solid #dfeadb}
 }
 </style>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
 <body>
 <div id="root"></div>
@@ -204,33 +210,59 @@ border:7px solid white;outline:1px solid #D9DDD9}
 <div id="toast" class="toast"></div>
 
 <script>
+const SUPABASE_URL = window.DIKLATHUB_CONFIG?.SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = window.DIKLATHUB_CONFIG?.SUPABASE_ANON_KEY || '';
+const db = (SUPABASE_URL && SUPABASE_ANON_KEY) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 const state = {
-  loggedIn:false,
-  portal:'admin',
-  page:'dashboard',
-  teacherPage:'teacher-dashboard',
-  activeTrainingId:1,
-  activeTrainingTab:'overview',
-  loginRole:'admin',
-  attendanceOpen:false,
+  loggedIn:false, portal:'teacher', page:'dashboard', teacherPage:'teacher-dashboard',
+  activeTrainingId:1, activeTrainingTab:'overview', loginRole:'teacher', attendanceOpen:false, attendanceToken:null,
   certificateIssued:true,
-  user:{name:'Siti Rahma, S.Pd.',school:'SMPN 1 Padang Panjang',nip:'198709122010012004',position:'Guru Mata Pelajaran',email:'guru@diklathub.local',phone:'0812-3456-7890'},
-  trainings:[
-    {id:1,title:'Penyusunan Modul Ajar Berbasis Kurikulum Merdeka',category:'Pedagogik',date:'25 Okt 2026',start:'08.00',end:'16.00',location:'Aula Dinas Pendidikan',mode:'Offline',quota:50,participants:47,status:'REGISTRATION_OPEN',speaker:'Dr. Rina Yusnita, M.Pd.',institution:'Universitas Negeri Padang',jp:8,desc:'Pelatihan praktis untuk membantu guru menyusun modul ajar yang kontekstual, terstruktur, dan selaras dengan Kurikulum Merdeka.',requirements:'Guru SD/SMP, membawa laptop dan perangkat pembelajaran.'},
-    {id:2,title:'Pemanfaatan AI untuk Pembelajaran',category:'Teknologi',date:'31 Okt 2026',start:'08.00',end:'15.00',location:'SMPN 1 Padang Panjang',mode:'Offline',quota:50,participants:42,status:'REGISTRATION_OPEN',speaker:'Fajar Ramadhan, M.Kom.',institution:'Praktisi EdTech',jp:7,desc:'Pengenalan pemanfaatan AI secara aman dan praktis untuk perencanaan, materi, asesmen, dan produktivitas guru.',requirements:'Guru SD/SMP, memiliki akun email aktif dan membawa laptop.'},
-    {id:3,title:'Asesmen Pembelajaran yang Bermakna',category:'Evaluasi',date:'8 Nov 2026',start:'08.30',end:'15.30',location:'Aula Dinas Pendidikan',mode:'Hybrid',quota:40,participants:38,status:'REGISTRATION_OPEN',speaker:'Dr. Yuni Pratiwi, M.Pd.',institution:'Pengawas Sekolah',jp:7,desc:'Mengembangkan asesmen diagnostik, formatif, dan sumatif yang relevan serta mudah diterapkan.',requirements:'Guru dan tenaga kependidikan terkait.'},
-    {id:4,title:'Literasi Digital untuk Guru',category:'Teknologi',date:'12 Sep 2026',start:'08.00',end:'16.00',location:'Aula Dinas Pendidikan',mode:'Offline',quota:60,participants:58,status:'COMPLETED',speaker:'Arief Setiawan, M.T.',institution:'Dinas Kominfo',jp:8,desc:'Pelatihan literasi digital dan keamanan dasar untuk guru.',requirements:'Guru semua jenjang.'}
-  ],
-  registrations:[
-    {id:101,trainingId:4,name:'Siti Rahma, S.Pd.',school:'SMPN 1 Padang Panjang',status:'APPROVED',attendance:'PRESENT'},
-    {id:102,trainingId:1,name:'Siti Rahma, S.Pd.',school:'SMPN 1 Padang Panjang',status:'APPROVED',attendance:null},
-    {id:103,trainingId:1,name:'Rizki Pratama, S.Pd.',school:'SMPN 2 Padang Panjang',status:'APPROVED',attendance:'PRESENT'},
-    {id:104,trainingId:1,name:'Yuliana, S.Pd.',school:'SDN 03 Padang Panjang',status:'PENDING_APPROVAL',attendance:null},
-  ],
-  certificates:[
-    {id:201,trainingId:4,title:'Literasi Digital untuk Guru',date:'12 Sep 2026',number:'421.5/00017/DISDIK/2026',status:'PUBLISHED',name:'Siti Rahma, S.Pd.',nip:'198709122010012004',jp:8}
-  ]
+  user:{id:null,name:'',school:'',nip:'',position:'',email:'',phone:'',role:'teacher'},
+  trainings:[], registrations:[], certificates:[], profiles:[], settings:null
 };
+function isBackendReady(){ return !!db; }
+function esc(v){ return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+async function loadData(){
+ if(!db) return;
+ const [{data:ts,error:te},{data:rs,error:re},{data:cs,error:ce},{data:st,error:se},{data:as,error:ae},{data:tc,error:tce}] = await Promise.all([
+   db.from('trainings').select('*').order('start_date',{ascending:true}),
+   db.from('registrations').select('id,training_id,user_id,status,registered_at,profiles:user_id(id,name,nip,school,position,email,phone),attendance(*)'),
+   db.from('certificates').select('id,training_id,user_id,registration_id,number,status,issued_at,verification_token,profiles:user_id(name,nip),trainings:title,start_date,jp'),
+   db.from('settings').select('*').eq('id',1).maybeSingle(),
+   db.from('attendance_sessions').select('*'),
+   db.rpc('training_participant_counts')
+ ]);
+ if(te) throw te; if(re) throw re; if(ce) throw ce; if(se) throw se; if(ae) throw ae; if(tce) throw tce;
+ const counts=Object.fromEntries((tc||[]).map(x=>[x.training_id,x.participant_count]));
+ state.trainings=(ts||[]).map(t=>({...t,participant_count:counts[t.id]||0,date:new Date(t.start_date+'T00:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}),start:(t.start_time||'').slice(0,5),end:(t.end_time||'').slice(0,5),participants:counts[t.id]||0}));
+ state.registrations=(rs||[]).map(r=>({id:r.id,trainingId:r.training_id,userId:r.user_id,name:r.profiles?.name||'',school:r.profiles?.school||'',nip:r.profiles?.nip||'',status:r.status,attendance:r.attendance?.[0]?.status||null,attendanceId:r.attendance?.[0]?.id||null,checkin:r.attendance?.[0]?.check_in||null}));
+ state.certificates=(cs||[]).map(c=>({id:c.id,trainingId:c.training_id,userId:c.user_id,title:c.trainings?.title||'',date:c.trainings?.start_date?new Date(c.trainings.start_date+'T00:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}):'',number:c.number,status:c.status,name:c.profiles?.name||'',nip:c.profiles?.nip||'',jp:c.trainings?.jp||0,token:c.verification_token}));
+ state.settings=st;
+ const sess=(as||[]).find(x=>x.training_id===state.activeTrainingId); state.attendanceOpen=!!sess?.is_open; state.attendanceToken=sess?.token||null;
+}
+async function loadCurrentUser(){
+ if(!db) return;
+ const {data:{session}}=await db.auth.getSession();
+ if(!session){state.loggedIn=false;return;}
+ const {data:p,error}=await db.from('profiles').select('*').eq('id',session.user.id).single();
+ if(error) throw error;
+ state.loggedIn=true; state.user={...p,email:p.email||session.user.email||''}; state.portal=p.role==='admin'?'admin':'teacher';
+ await loadData();
+}
+async function publicVerify(token){
+ if(!db)return; const {data,error}=await db.rpc('verify_certificate',{p_token:token});
+ const root=document.getElementById('root');
+ if(error||!data?.length){root.innerHTML=`<div class="verify-page"><div class="card verify-card"><div class="eyebrow">DiklatHub Padang Panjang</div><h1>Sertifikat Tidak Ditemukan</h1><div class="verify-status" style="background:var(--red-bg);color:var(--red)">✕ QR / token tidak valid</div><p class="small muted">Sertifikat tidak dapat diverifikasi.</p></div></div>`;return;}
+ const c=data[0]; root.innerHTML=`<div class="verify-page"><div class="card verify-card"><div class="eyebrow">Verifikasi Sertifikat</div><h1>DiklatHub Padang Panjang</h1><div class="verify-status">${c.valid?'✓ VALID — Sertifikat terverifikasi':'✕ SERTIFIKAT TIDAK VALID'}</div><div class="info-grid" style="grid-template-columns:1fr 1fr">${info('Nama Peserta',esc(c.participant_name))}${info('No. Sertifikat',esc(c.certificate_number))}${info('Pelatihan',esc(c.training_title))}${info('Tanggal',new Date(c.start_date+'T00:00:00').toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}))}</div><p class="small muted" style="margin-top:15px">Halaman ini memvalidasi sertifikat melalui database DiklatHub.</p></div></div>`;
+}
+
+async function initApp(){
+ const verify=new URLSearchParams(location.search).get("verify"); if(verify){await publicVerify(verify);return;}
+ if(!db){render();return;}
+ try{await loadCurrentUser();}catch(e){console.error(e);toast('Gagal memuat data sistem');}
+ render();
+}
+
 
 const icons = {
  dashboard:'⌂', training:'▣', participants:'♙', attendance:'✓', certificate:'◇', teacher:'♟', report:'▥', settings:'⚙',
@@ -248,7 +280,7 @@ function fmtStatus(s){
 }
 
 function trainingById(id){return state.trainings.find(t=>t.id===Number(id))}
-function myRegistration(trainingId){return state.registrations.find(r=>r.trainingId===Number(trainingId)&&r.name===state.user.name)}
+function myRegistration(trainingId){return state.registrations.find(r=>r.trainingId===Number(trainingId)&&r.userId===state.user.id)}
 
 function toast(msg){
  const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
@@ -260,61 +292,16 @@ function openModal(html){
 }
 function closeModal(){document.getElementById('modal').classList.remove('show')}
 
-function login(){
- state.loggedIn=true;
- state.portal=state.loginRole==='teacher'?'teacher':'admin';
- render();
- toast(state.portal==='admin'?'Berhasil masuk sebagai Admin Dinas':'Berhasil masuk sebagai Guru/Tendik');
+async function login(){
+ if(!db){toast('Backend belum dikonfigurasi. Isi SUPABASE_URL dan SUPABASE_ANON_KEY.');return;}
+ const email=document.getElementById('loginEmail')?.value?.trim(); const password=document.getElementById('loginPassword')?.value;
+ if(!email||!password){toast('Email dan password wajib diisi');return;}
+ const {data,error}=await db.auth.signInWithPassword({email,password});
+ if(error){toast(error.message);return;}
+ try{await loadCurrentUser();render();toast(state.portal==='admin'?'Berhasil masuk sebagai Admin Dinas':'Berhasil masuk sebagai Guru/Tendik');}catch(e){toast('Profil pengguna belum siap. Hubungi admin.');await db.auth.signOut();}
 }
 
-function logout(){state.loggedIn=false;render()}
-
-function setPortal(p){state.portal=p;render()}
-function setPage(p){state.page=p;render()}
-function setTeacherPage(p){state.teacherPage=p;render()}
-function openTraining(id,tab='overview'){state.activeTrainingId=Number(id);state.activeTrainingTab=tab;state.page='training-detail';render()}
-function setTrainingTab(tab){state.activeTrainingTab=tab;render()}
-
-function loginView(){
- return `
- <div class="login-page">
-  <section class="login-hero">
-   <div>
-    <div class="brand" style="padding:0">
-      <div class="brand-mark">D</div>
-      <div><b>DiklatHub Padang Panjang</b><small>Dinas Pendidikan Kota Padang Panjang</small></div>
-    </div>
-    <div style="margin-top:70px;position:relative;z-index:2">
-      <span class="badge green">Sistem Manajemen Pelatihan</span>
-      <h1>Pelatihan guru, lebih rapi dari pendaftaran sampai sertifikat.</h1>
-      <p>Satu platform untuk mengelola pelatihan, peserta, kehadiran, sertifikat otomatis, dan riwayat pengembangan kompetensi Guru & Tenaga Kependidikan.</p>
-      <div class="hero-points" style="margin-top:28px">
-        <div class="hero-point"><b>Pendaftaran Terintegrasi</b><span>Tanpa input ulang data peserta.</span></div>
-        <div class="hero-point"><b>Absensi Digital</b><span>QR check-in yang terhubung ke peserta.</span></div>
-        <div class="hero-point"><b>Sertifikat Otomatis</b><span>Nomor, nama, pelatihan dan QR terisi otomatis.</span></div>
-      </div>
-    </div>
-   </div>
-   <div class="small muted">Interactive HTML Mockup • Data hanya contoh untuk demonstrasi.</div>
-   <div class="hero-orb"></div>
-  </section>
-  <section class="login-panel">
-    <div class="login-box">
-      <div class="eyebrow">DiklatHub</div>
-      <h2>Masuk ke sistem</h2>
-      <p>Pilih role demo untuk melihat Portal Admin atau Portal Guru.</p>
-      <div class="role-cards">
-        <button class="role-card ${state.loginRole==='admin'?'active':''}" onclick="state.loginRole='admin';render()"><b>Admin Dinas</b><span>Kelola pelatihan & operasional</span></button>
-        <button class="role-card ${state.loginRole==='teacher'?'active':''}" onclick="state.loginRole='teacher';render()"><b>Guru / Tendik</b><span>Daftar, absensi & sertifikat</span></button>
-      </div>
-      <div class="field"><label>Email</label><input class="input" value="${state.loginRole==='admin'?'admin@diklathub.local':'guru@diklathub.local'}"/></div>
-      <div class="field" style="margin-top:13px"><label>Password</label><input type="password" class="input" value="demo1234"/></div>
-      <button class="btn primary block" style="margin-top:16px" onclick="login()">Masuk</button>
-      <div class="demo-note"><b>Demo mockup.</b> Login belum menggunakan backend. Seluruh tombol utama dibuat untuk mensimulasikan flow produk.</div>
-    </div>
-  </section>
- </div>`;
-}
+async function logout(){ if(db) await db.auth.signOut(); state.loggedIn=false; state.user={id:null,name:'',school:'',nip:'',position:'',email:'',phone:'',role:'teacher'}; render(); }
 
 function sidebar(){
  const adminNav=[
@@ -404,26 +391,26 @@ function createTrainingModal(){
  <div class="modal-body">
   <div class="eyebrow">Informasi</div><div class="form-grid" style="margin-top:12px">
    <div class="field full"><label>Nama Pelatihan</label><input id="newTitle" class="input" placeholder="Contoh: Penguatan Literasi Numerasi"/></div>
-   <div class="field"><label>Kategori</label><select class="select"><option>Pedagogik</option><option>Teknologi</option><option>Evaluasi</option><option>Profesional</option></select></div>
-   <div class="field"><label>Target Peserta</label><input class="input" value="Guru SD/SMP"/></div>
-   <div class="field full"><label>Deskripsi</label><textarea class="textarea" placeholder="Tujuan dan gambaran kegiatan..."></textarea></div>
+   <div class="field"><label>Kategori</label><select id="newCategory" class="select"><option>Pedagogik</option><option>Teknologi</option><option>Evaluasi</option><option>Profesional</option></select></div>
+   <div class="field"><label>Target Peserta</label><input id="newTarget" class="input" value="Guru SD/SMP"/></div>
+   <div class="field full"><label>Deskripsi</label><textarea id="newDescription" class="textarea" placeholder="Tujuan dan gambaran kegiatan..."></textarea></div>
   </div>
   <div class="sep"></div><div class="eyebrow">Jadwal & Lokasi</div>
   <div class="form-grid" style="margin-top:12px">
-   <div class="field"><label>Tanggal Mulai</label><input type="date" class="input" value="2026-11-15"/></div>
-   <div class="field"><label>Tanggal Selesai</label><input type="date" class="input" value="2026-11-15"/></div>
-   <div class="field"><label>Waktu Mulai</label><input type="time" class="input" value="08:00"/></div>
-   <div class="field"><label>Waktu Selesai</label><input type="time" class="input" value="16:00"/></div>
-   <div class="field"><label>Mode</label><select class="select"><option>Offline</option><option>Online</option><option>Hybrid</option></select></div>
-   <div class="field"><label>Lokasi</label><input class="input" value="Aula Dinas Pendidikan"/></div>
+   <div class="field"><label>Tanggal Mulai</label><input id="newDate" type="date" class="input" value="2026-11-15"/></div>
+   <div class="field"><label>Tanggal Selesai</label><input id="newEndDate" type="date" class="input" value="2026-11-15"/></div>
+   <div class="field"><label>Waktu Mulai</label><input id="newStart" type="time" class="input" value="08:00"/></div>
+   <div class="field"><label>Waktu Selesai</label><input id="newEnd" type="time" class="input" value="16:00"/></div>
+   <div class="field"><label>Mode</label><select id="newMode" class="select"><option>Offline</option><option>Online</option><option>Hybrid</option></select></div>
+   <div class="field"><label>Lokasi</label><input id="newLocation" class="input" value="Aula Dinas Pendidikan"/></div>
   </div>
   <div class="sep"></div><div class="eyebrow">Peserta & Narasumber</div>
   <div class="form-grid" style="margin-top:12px">
    <div class="field"><label>Kuota</label><input id="newQuota" type="number" class="input" value="50"/></div>
-   <div class="field"><label>Approval</label><select class="select"><option>Tidak — langsung disetujui</option><option>Ya — perlu approval admin</option></select></div>
-   <div class="field"><label>Nama Narasumber</label><input class="input" placeholder="Nama narasumber"/></div>
-   <div class="field"><label>Instansi</label><input class="input" placeholder="Instansi"/></div>
-   <div class="field"><label>Total JP</label><input class="input" type="number" value="8"/></div>
+   <div class="field"><label>Approval</label><select id="newApproval" class="select"><option value="false">Tidak — langsung disetujui</option><option value="true">Ya — perlu approval admin</option></select></div>
+   <div class="field"><label>Nama Narasumber</label><input id="newSpeaker" class="input" placeholder="Nama narasumber"/></div>
+   <div class="field"><label>Instansi</label><input id="newInstitution" class="input" placeholder="Instansi"/></div>
+   <div class="field"><label>Total JP</label><input id="newJp" class="input" type="number" value="8"/></div>
    <div class="field"><label>Sertifikat</label><select class="select"><option>Aktifkan sertifikat otomatis</option><option>Tanpa sertifikat</option></select></div>
   </div>
   <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px">
@@ -433,12 +420,13 @@ function createTrainingModal(){
  </div>`);
 }
 
-function saveNewTraining(){
+async function saveNewTraining(){
+ if(!db){toast('Backend belum dikonfigurasi');return;}
  const title=document.getElementById('newTitle').value||'Pelatihan Baru';
  const quota=Number(document.getElementById('newQuota').value||50);
- const id=Math.max(...state.trainings.map(t=>t.id))+1;
- state.trainings.unshift({id,title,category:'Pedagogik',date:'15 Nov 2026',start:'08.00',end:'16.00',location:'Aula Dinas Pendidikan',mode:'Offline',quota,participants:0,status:'REGISTRATION_OPEN',speaker:'Belum ditentukan',institution:'-',jp:8,desc:'Deskripsi pelatihan baru.',requirements:'Guru/Tendik sesuai target pelatihan.'});
- closeModal();toast('Pelatihan berhasil dipublikasikan');state.page='trainings';render();
+ const payload={title,category:document.getElementById('newCategory')?.value||'Pedagogik',description:document.getElementById('newDescription')?.value||'Deskripsi pelatihan.',requirements:document.getElementById('newRequirements')?.value||'Guru/Tendik sesuai target pelatihan.',start_date:document.getElementById('newDate')?.value||new Date().toISOString().slice(0,10),end_date:document.getElementById('newEndDate')?.value||document.getElementById('newDate')?.value||new Date().toISOString().slice(0,10),start_time:document.getElementById('newStart')?.value||'08:00',end_time:document.getElementById('newEnd')?.value||'16:00',location:document.getElementById('newLocation')?.value||'Aula Dinas Pendidikan',mode:document.getElementById('newMode')?.value||'Offline',quota,speaker:document.getElementById('newSpeaker')?.value||'Belum ditentukan',institution:document.getElementById('newInstitution')?.value||'-',jp:Number(document.getElementById('newJp')?.value||8),status:'REGISTRATION_OPEN',approval_required:document.getElementById('newApproval')?.value==='true',created_by:state.user.id};
+ const {error}=await db.from('trainings').insert(payload); if(error){toast(error.message);return;}
+ closeModal(); await loadData(); toast('Pelatihan berhasil dipublikasikan'); state.page='trainings'; render();
 }
 
 function trainingDetail(){
@@ -476,60 +464,30 @@ function info(a,b){return `<div class="info-box"><small>${a}</small><b>${b}</b><
 function trainingParticipants(t){
  const regs=state.registrations.filter(r=>r.trainingId===t.id);
  const rows=regs.length?regs.map(r=>`<tr><td><b>${r.name}</b></td><td>${r.school}</td><td>${fmtStatus(r.status)}</td><td>${r.attendance?fmtStatus(r.attendance):'<span class="muted">Belum ada</span>'}</td><td>${r.status==='PENDING_APPROVAL'?`<button class="btn primary sm" onclick="approveRegistration(${r.id})">Approve</button>`:'<button class="btn secondary sm">Detail</button>'}</td></tr>`).join(''):`<tr><td colspan="5"><div class="empty">Belum ada peserta.</div></td></tr>`;
- return `<div class="toolbar"><input class="input grow" placeholder="Cari nama/NIP/sekolah..."/><select class="select" style="width:190px"><option>Semua Status</option><option>Approved</option><option>Pending</option></select><button class="btn secondary">Export Excel</button></div>
+ return `<div class="toolbar"><input class="input grow" placeholder="Cari nama/NIP/sekolah..."/><select class="select" style="width:190px"><option>Semua Status</option><option>Approved</option><option>Pending</option></select><button class="btn secondary" onclick="exportCurrentTable()">Export Excel</button></div>
  <div class="table-wrap"><table><thead><tr><th>Nama</th><th>Sekolah</th><th>Pendaftaran</th><th>Kehadiran</th><th>Aksi</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
-function approveRegistration(id){const r=state.registrations.find(x=>x.id===id);r.status='APPROVED';toast('Peserta disetujui');render()}
-
-function trainingAttendance(t){
- const regs=state.registrations.filter(r=>r.trainingId===t.id&&r.status==='APPROVED');
- return `<div class="grid-2">
- <div>
-  <div class="callout">
-   <div class="eyebrow">Sesi Absensi</div>
-   <h4 style="margin-top:8px">${state.attendanceOpen?'Absensi sedang dibuka':'Absensi belum dibuka'}</h4>
-   <p>${state.attendanceOpen?'Guru yang terdaftar dapat scan QR untuk check-in.':'Buka sesi pada saat pelatihan berlangsung.'}</p>
-   <div style="display:flex;gap:8px;margin-top:13px">${!state.attendanceOpen?`<button class="btn primary" onclick="state.attendanceOpen=true;toast('Sesi absensi dibuka');render()">Buka Absensi</button>`:`<button class="btn secondary" onclick="showQR()">Tampilkan QR</button><button class="btn danger" onclick="state.attendanceOpen=false;toast('Sesi absensi ditutup');render()">Tutup</button>`}</div>
-  </div>
- </div>
- <div>
-  <div class="info-grid" style="grid-template-columns:repeat(2,1fr)">${info('Peserta Approved',regs.length)}${info('Sudah Hadir',regs.filter(x=>x.attendance==='PRESENT').length)}</div>
- </div></div>
- <div class="sep"></div>
- <div class="table-wrap"><table><thead><tr><th>Peserta</th><th>Sekolah</th><th>Check-in</th><th>Status</th><th></th></tr></thead><tbody>
- ${regs.map(r=>`<tr><td><b>${r.name}</b></td><td>${r.school}</td><td>${r.attendance==='PRESENT'?'08:14 WIB':'—'}</td><td>${r.attendance?fmtStatus(r.attendance):'<span class="badge gray">Belum Absen</span>'}</td><td><button class="btn secondary sm" onclick="correctAttendance(${r.id})">Koreksi</button></td></tr>`).join('')}
- </tbody></table></div>`;
+async function approveRegistration(id){
+ if(!db){toast('Backend belum dikonfigurasi');return;}
+ const {error}=await db.from('registrations').update({status:'APPROVED'}).eq('id',id); if(error){toast(error.message);return;}
+ await loadData(); toast('Peserta disetujui'); render();
 }
-function showQR(){openModal(`<div class="modal-head"><div><h2>QR Absensi</h2><p>Peserta scan QR ini menggunakan akun DiklatHub.</p></div><button class="close-btn" onclick="closeModal()">×</button></div><div class="modal-body" style="text-align:center"><div class="qr" style="width:220px;height:220px;background-size:40px 40px;border-width:14px"></div><h3>Absensi ${trainingById(state.activeTrainingId).title}</h3><p class="muted small">Token aktif selama sesi absensi dibuka.</p></div>`)}
-function correctAttendance(id){const r=state.registrations.find(x=>x.id===id);r.attendance=r.attendance==='PRESENT'?'ABSENT':'PRESENT';toast('Koreksi absensi disimpan dan dicatat di audit log');render()}
-
-function trainingCertificates(t){
- const regs=state.registrations.filter(r=>r.trainingId===t.id);
- const eligible=regs.filter(r=>r.status==='APPROVED'&&r.attendance==='PRESENT');
- const certs=state.certificates.filter(c=>c.trainingId===t.id);
- return `<div class="kpi-grid">${kpi('Eligible',eligible.length,'Memenuhi rule','✓')}${kpi('Generated',certs.length,'PDF dibuat','◇')}${kpi('Published',certs.filter(c=>c.status==='PUBLISHED').length,'Tersedia bagi guru','↗')}${kpi('Revoked',certs.filter(c=>c.status==='REVOKED').length,'Tidak valid','!')}</div>
- <div class="callout"><h4>Certificate Automation</h4><p>Untuk pelatihan yang selesai, peserta Approved + Hadir akan otomatis mendapatkan nomor, PDF, dan QR verifikasi. Admin hanya melakukan review, reissue, atau revoke bila diperlukan.</p></div>
- <div class="sep"></div>
- <div class="table-wrap"><table><thead><tr><th>Peserta</th><th>Attendance</th><th>Eligibility</th><th>No. Sertifikat</th><th>Status</th><th></th></tr></thead><tbody>
- ${regs.map(r=>{const c=certs.find(c=>c.name===r.name);const ok=r.status==='APPROVED'&&r.attendance==='PRESENT'&&t.status==='COMPLETED';return `<tr><td><b>${r.name}</b></td><td>${r.attendance?fmtStatus(r.attendance):'<span class="muted">—</span>'}</td><td>${ok?'<span class="badge green">Eligible</span>':'<span class="badge gray">Belum Eligible</span>'}</td><td>${c?c.number:'—'}</td><td>${c?fmtStatus(c.status):'<span class="muted">Pending</span>'}</td><td>${c?`<button class="btn secondary sm" onclick="viewCertificate(${c.id})">Lihat</button>`:'—'}</td></tr>`}).join('')}
- </tbody></table></div>`;
+function showQR(){
+ const t=trainingById(state.activeTrainingId); if(!state.attendanceToken){toast('Buka sesi absensi terlebih dahulu');return;}
+ openModal(`<div class="modal-head"><div><h2>QR Absensi</h2><p>Peserta scan QR ini menggunakan akun DiklatHub.</p></div><button class="close-btn" onclick="closeModal()">×</button></div><div class="modal-body" style="text-align:center"><canvas id="attendanceQr" width="260" height="260" style="border:10px solid white;outline:1px solid #D9DDD9;border-radius:8px"></canvas><h3>${t.title}</h3><p class="muted small">Token aktif selama sesi absensi dibuka.</p></div>`);
+ QRCode.toCanvas(document.getElementById('attendanceQr'),String(state.attendanceToken),{width:240,margin:1},err=>{if(err)console.error(err);});
 }
 
-function completeTraining(id){
- const t=trainingById(id);t.status='COMPLETED';
- const regs=state.registrations.filter(r=>r.trainingId===id&&r.status==='APPROVED'&&r.attendance==='PRESENT');
- regs.forEach((r,i)=>{
-  if(!state.certificates.find(c=>c.trainingId===id&&c.name===r.name)){
-   state.certificates.push({id:Date.now()+i,trainingId:id,title:t.title,date:t.date,number:`421.5/${String(20+state.certificates.length+i).padStart(5,'0')}/DISDIK/2026`,status:'PUBLISHED',name:r.name,nip:r.name===state.user.name?state.user.nip:'1988XXXXXXXXXXXX',jp:t.jp});
-  }
- });
- toast(`Pelatihan selesai. ${regs.length} sertifikat otomatis diterbitkan.`);
- render();
+async function completeTraining(id){
+ if(!db){toast('Backend belum dikonfigurasi');return;}
+ const {error}=await db.from('trainings').update({status:'COMPLETED'}).eq('id',id); if(error){toast(error.message);return;}
+ const {error:ce}=await db.rpc('issue_eligible_certificates',{p_training_id:id}); if(ce){toast('Pelatihan selesai, tetapi penerbitan sertifikat gagal: '+ce.message);await loadData();render();return;}
+ await loadData(); const count=state.certificates.filter(c=>c.trainingId===id).length; toast(`Pelatihan selesai. ${count} sertifikat tersedia.`); render();
 }
 
 function trainingReport(t){
  return `<div class="kpi-grid">${kpi('Kuota',t.quota,'Kapasitas','♙')}${kpi('Pendaftar',t.participants,'Total registrasi','▣')}${kpi('Hadir',state.registrations.filter(r=>r.trainingId===t.id&&r.attendance==='PRESENT').length,'Attendance','✓')}${kpi('Sertifikat',state.certificates.filter(c=>c.trainingId===t.id).length,'Terbit','◇')}</div>
- <div class="callout"><h4>Export Laporan Pelatihan</h4><p>Rekap peserta, absensi, dan sertifikat dapat diekspor untuk kebutuhan administrasi Dinas.</p><div style="margin-top:12px;display:flex;gap:8px"><button class="btn secondary">Export Peserta</button><button class="btn secondary">Export Absensi</button><button class="btn secondary">Export Sertifikat</button></div></div>`;
+ <div class="callout"><h4>Export Laporan Pelatihan</h4><p>Rekap peserta, absensi, dan sertifikat dapat diekspor untuk kebutuhan administrasi Dinas.</p><div style="margin-top:12px;display:flex;gap:8px"><button class="btn secondary" onclick="exportCurrentTable()">Export Peserta</button><button class="btn secondary" onclick="exportCurrentTable()">Export Absensi</button><button class="btn secondary" onclick="exportCurrentTable()">Export Sertifikat</button></div></div>`;
 }
 
 function genericTablePage(type){
@@ -539,7 +497,7 @@ function genericTablePage(type){
  certificates:['Sertifikat','Monitoring penerbitan sertifikat otomatis.',`<thead><tr><th>Peserta</th><th>Pelatihan</th><th>Nomor</th><th>Tanggal</th><th>Status</th><th></th></tr></thead><tbody>${state.certificates.map(c=>`<tr><td><b>${c.name}</b></td><td>${c.title}</td><td>${c.number}</td><td>${c.date}</td><td>${fmtStatus(c.status)}</td><td><button class="btn secondary sm" onclick="viewCertificate(${c.id})">Lihat</button></td></tr>`).join('')}</tbody>`],
  };
  const c=cfg[type];
- return shell(`<div class="page-head"><div><div class="eyebrow">Operasional</div><h1>${c[0]}</h1><p>${c[1]}</p></div><button class="btn secondary">Export Excel</button></div><section class="card pad"><div class="toolbar"><input class="input grow" placeholder="Cari data..."/><select class="select" style="width:180px"><option>Semua Status</option></select></div><div class="table-wrap"><table>${c[2]}</table></div></section>`,c[0]);
+ return shell(`<div class="page-head"><div><div class="eyebrow">Operasional</div><h1>${c[0]}</h1><p>${c[1]}</p></div><button class="btn secondary" onclick="exportCurrentTable()">Export Excel</button></div><section class="card pad"><div class="toolbar"><input class="input grow" placeholder="Cari data..."/><select class="select" style="width:180px"><option>Semua Status</option></select></div><div class="table-wrap"><table>${c[2]}</table></div></section>`,c[0]);
 }
 
 function teachersPage(){
@@ -553,7 +511,7 @@ function teachersPage(){
 }
 
 function reportsPage(){
- return shell(`<div class="page-head"><div><div class="eyebrow">Monitoring</div><h1>Laporan</h1><p>Rekap operasional pelatihan untuk administrasi Dinas.</p></div><button class="btn secondary">Export Report</button></div>
+ return shell(`<div class="page-head"><div><div class="eyebrow">Monitoring</div><h1>Laporan</h1><p>Rekap operasional pelatihan untuk administrasi Dinas.</p></div><button class="btn secondary" onclick="exportCurrentTable()">Export Report</button></div>
  <div class="kpi-grid">${kpi('Total Pelatihan','24','Tahun 2026','▣')}${kpi('Total Peserta','846','Semua pelatihan','♙')}${kpi('Attendance','92%','Rata-rata','✓')}${kpi('Sertifikat','735','Terbit','◇')}</div>
  <div class="grid-2">
   <section class="card pad"><div class="section-title"><div><h3>Rekap per Pelatihan</h3><p>Ringkasan utama.</p></div></div>
@@ -603,7 +561,7 @@ function teacherDashboard(){
 }
 
 function certificateCard(c){
- return `<div class="cert-card card" style="box-shadow:none;margin-bottom:10px"><span class="badge green">Sertifikat Terbit</span><h3>${c.title}</h3><p>${c.date}<br/>No. ${c.number}</p><div class="cert-actions"><button class="btn secondary sm" onclick="viewCertificate(${c.id})">Lihat</button><button class="btn primary sm" onclick="toast('PDF sertifikat siap diunduh')">Download PDF</button></div></div>`;
+ return `<div class="cert-card card" style="box-shadow:none;margin-bottom:10px"><span class="badge green">Sertifikat Terbit</span><h3>${c.title}</h3><p>${c.date}<br/>No. ${c.number}</p><div class="cert-actions"><button class="btn secondary sm" onclick="viewCertificate(${c.id})">Lihat</button><button class="btn primary sm" onclick="downloadCertificatePDF(${c.id})">Download PDF</button></div></div>`;
 }
 
 function teacherCatalogue(){
@@ -637,10 +595,11 @@ function registerTraining(id){
  <p class="small muted" style="line-height:1.6">Data profil digunakan otomatis. Anda tidak perlu mengisi ulang nama, NIP, sekolah, atau jabatan.</p>
  <div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn secondary" onclick="closeModal()">Batal</button><button class="btn primary" onclick="confirmRegister(${t.id})">Konfirmasi Pendaftaran</button></div></div>`);
 }
-function confirmRegister(id){
+async function confirmRegister(id){
+ if(!db){toast('Backend belum dikonfigurasi');return;}
  if(myRegistration(id)){toast('Anda sudah terdaftar');closeModal();return}
- const t=trainingById(id);state.registrations.push({id:Date.now(),trainingId:id,name:state.user.name,school:state.user.school,status:'APPROVED',attendance:null});t.participants++;
- closeModal();toast('Pendaftaran berhasil!');render();
+ const {error}=await db.from('registrations').insert({training_id:id,user_id:state.user.id,status:'APPROVED'}); if(error){toast(error.message);return;}
+ closeModal(); await loadData(); toast('Pendaftaran berhasil!'); render();
 }
 
 function myTrainings(){
@@ -649,13 +608,23 @@ function myTrainings(){
  <div class="tabs"><button class="tab active">Semua</button><button class="tab">Terdaftar</button><button class="tab">Berlangsung</button><button class="tab">Selesai</button></div>
  <div class="training-cards">${regs.map(r=>{const t=trainingById(r.trainingId);return `<article class="card training-card"><div>${fmtStatus(t.status)}<h3>${t.title}</h3><div class="training-meta"><div class="meta-row">📅 ${t.date}</div><div class="meta-row">📍 ${t.location}</div><div class="meta-row">Status pendaftaran: ${r.status}</div></div></div><div class="capacity">${state.attendanceOpen&&t.id===state.activeTrainingId&&r.status==='APPROVED'&&!r.attendance?`<div class="callout"><h4>Absensi sedang dibuka</h4><p>Scan QR untuk mencatat kehadiran.</p><button class="btn primary block" style="margin-top:10px" onclick="teacherCheckin(${r.id})">SCAN QR ABSENSI</button></div>`:r.attendance==='PRESENT'?`<div class="callout"><h4>✓ Absensi Berhasil</h4><p>Hadir • 08.14 WIB</p></div>`:t.status==='COMPLETED'?`<div class="callout"><h4>Pelatihan Selesai</h4><p>${state.certificates.some(c=>c.trainingId===t.id&&c.name===state.user.name)?'Sertifikat Anda sudah tersedia.':'Sertifikat belum tersedia / sedang diproses.'}</p></div>`:`<button class="btn secondary block" onclick="teacherTrainingDetail(${t.id})">Lihat Detail</button>`}</div></article>`}).join('')}</div>`, 'Pelatihan Saya');
 }
-function teacherCheckin(regId){const r=state.registrations.find(x=>x.id===regId);r.attendance='PRESENT';toast('Absensi berhasil dicatat • 08.14 WIB');render()}
+async function teacherCheckin(regId){
+ if(!db){toast('Backend belum dikonfigurasi');return;}
+ if(!state.attendanceOpen||!state.attendanceToken){toast('Sesi absensi belum dibuka');return;}
+ openModal(`<div class="modal-head"><div><h2>Scan QR Absensi</h2><p>Arahkan kamera ke QR yang ditampilkan admin.</p></div><button class="close-btn" onclick="closeModal();stopScanner()">×</button></div><div class="modal-body"><div id="qr-reader" style="width:100%"></div><div class="callout" style="margin-top:12px"><p class="small">Jika perangkat tidak mendukung kamera, admin dapat melakukan koreksi manual.</p></div></div>`);
+ window._qrScanner=new Html5Qrcode('qr-reader');
+ window._qrScanner.start({facingMode:'environment'},{fps:10,qrbox:220},async decoded=>{
+   if(decoded!==String(state.attendanceToken)){toast('QR tidak valid untuk sesi ini');return;}
+   await stopScanner(); const {error}=await db.rpc('check_in_qr',{p_registration_id:regId,p_token:decoded});
+   if(error){toast(error.message);return;} closeModal(); await loadData(); toast('Absensi berhasil dicatat'); render();
+ },()=>{}).catch(()=>toast('Kamera tidak dapat diakses. Gunakan koreksi manual oleh admin.'));
+}
+async function stopScanner(){ if(window._qrScanner){try{await window._qrScanner.stop();}catch(e){} try{window._qrScanner.clear();}catch(e){} window._qrScanner=null;} }
 
-function teacherCertificates(){
- const cs=state.certificates.filter(c=>c.name===state.user.name);
- return shell(`<div class="page-head"><div><div class="eyebrow">Dokumen Saya</div><h1>Sertifikat Saya</h1><p>Sertifikat diterbitkan otomatis oleh sistem. Anda tinggal melihat, download, atau print.</p></div></div>
- <div class="callout" style="margin-bottom:16px"><h4>Bagaimana sertifikat terbit?</h4><p>Setelah pelatihan selesai, sistem memvalidasi pendaftaran dan kehadiran. Peserta yang memenuhi syarat otomatis mendapatkan nomor, PDF, dan QR verifikasi.</p></div>
- <div class="grid-3">${cs.map(c=>certificateCard(c)).join('')}${cs.length?`<div class="card cert-card"><span class="badge amber">Sedang Diproses</span><h3>Pelatihan yang Baru Selesai</h3><p>Sertifikat akan muncul otomatis setelah rule kehadiran tervalidasi.</p></div>`:''}</div>`, 'Sertifikat Saya');
+async function downloadCertificatePDF(id){
+ const c=state.certificates.find(x=>x.id===Number(id)); if(!c)return;
+ const holder=document.createElement('div'); holder.style.position='fixed'; holder.style.left='-10000px'; holder.style.top='0'; holder.style.width='1100px'; holder.innerHTML=`<div class="cert-preview" style="background:#fff;width:1100px;min-height:760px"><div style="font-size:16px;font-weight:900">PEMERINTAH KOTA PADANG PANJANG<br/>DINAS PENDIDIKAN</div><h1>SERTIFIKAT</h1><div class="cert-no">No. ${esc(c.number)}</div><p class="muted small" style="margin-top:38px">Diberikan kepada</p><h2>${esc(c.name)}</h2><div class="small">NIP. ${esc(c.nip)}</div><p class="small muted" style="margin-top:38px">Atas partisipasinya sebagai <b>PESERTA</b> dalam</p><h3 style="font-size:24px;margin:10px auto;max-width:800px">${esc(c.title)}</h3><p class="small muted">${esc(c.date)} • ${c.jp} JP<br/>Dinas Pendidikan Kota Padang Panjang</p><div style="height:20px"></div></div>`; document.body.appendChild(holder);
+ try{const canvas=await html2canvas(holder.firstElementChild,{scale:2,backgroundColor:'#fff'}); const {jsPDF}=window.jspdf; const pdf=new jsPDF('landscape','mm','a4'); const img=canvas.toDataURL('image/png'); pdf.addImage(img,'PNG',0,0,297,210); pdf.save(`Sertifikat-${String(c.number).replaceAll('/','-')}.pdf`); toast('PDF sertifikat berhasil dibuat');}catch(e){console.error(e);toast('Gagal membuat PDF');} finally{holder.remove();}
 }
 
 function viewCertificate(id){
@@ -667,9 +636,10 @@ function viewCertificate(id){
   <p class="muted small" style="margin-top:26px">Diberikan kepada</p><h2>${c.name}</h2><div class="small">NIP. ${c.nip}</div>
   <p class="small muted" style="margin-top:28px">Atas partisipasinya sebagai <b>PESERTA</b> dalam</p><h3 style="font-size:18px;margin:10px auto;max-width:600px">${c.title}</h3>
   <p class="small muted">${c.date} • ${c.jp} JP<br/>Dinas Pendidikan Kota Padang Panjang</p>
-  <div class="qr"></div><div class="small muted" style="margin-top:8px">QR Verifikasi Sertifikat</div>
+  <canvas id="certQr" width="100" height="100" style="margin:15px auto 0"></canvas><div class="small muted" style="margin-top:8px">QR Verifikasi Sertifikat</div>
  </div>
- <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:15px" class="no-print"><button class="btn secondary" onclick="toast('PDF sertifikat siap diunduh')">Download PDF</button><button class="btn primary" onclick="window.print()">Print</button><button class="btn ghost" onclick="verifyCertificate(${c.id})">Verifikasi</button></div></div>`);
+ <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:15px" class="no-print"><button class="btn secondary" onclick="downloadCertificatePDF(${c.id})">Download PDF</button><button class="btn primary" onclick="window.print()">Print</button><button class="btn ghost" onclick="verifyCertificate(${c.id})">Verifikasi</button></div></div>`);
+ const q=document.getElementById('certQr'); if(q && c.token) QRCode.toCanvas(q,`${location.origin}${location.pathname}?verify=${c.token}`,{width:100,margin:1});
 }
 function verifyCertificate(id){
  const c=state.certificates.find(x=>x.id===Number(id));closeModal();
@@ -680,17 +650,37 @@ function verifyCertificate(id){
 }
 
 function profilePage(){
- return shell(`<div class="page-head"><div><div class="eyebrow">Akun Saya</div><h1>Profil Saya</h1><p>Data utama yang digunakan untuk pendaftaran dan sertifikat.</p></div><button class="btn primary" onclick="toast('Perubahan profil disimpan')">Simpan Perubahan</button></div>
+ return shell(`<div class="page-head"><div><div class="eyebrow">Akun Saya</div><h1>Profil Saya</h1><p>Data utama yang digunakan untuk pendaftaran dan sertifikat.</p></div><button class="btn primary" onclick="saveProfile()">Simpan Perubahan</button></div>
  <div class="grid-2">
  <section class="card pad"><div class="profile-header"><div class="profile-avatar">SR</div><div><h3 style="margin:0 0 5px">${state.user.name}</h3><p class="small muted" style="margin:0">${state.user.position}<br/>${state.user.school}</p></div></div><div class="sep"></div>
- <div class="form-grid"><div class="field"><label>Nama Lengkap</label><input class="input" value="${state.user.name}"/></div><div class="field"><label>NIP</label><input class="input" value="${state.user.nip}"/></div><div class="field"><label>Email</label><input class="input" value="${state.user.email}"/></div><div class="field"><label>No. HP</label><input class="input" value="${state.user.phone}"/></div><div class="field"><label>Sekolah</label><input class="input" value="${state.user.school}"/></div><div class="field"><label>Jabatan</label><input class="input" value="${state.user.position}"/></div></div></section>
+ <div class="form-grid"><div class="field"><label>Nama Lengkap</label><input data-profile-name class="input" value="${state.user.name}"/></div><div class="field"><label>NIP</label><input data-profile-nip class="input" value="${state.user.nip}"/></div><div class="field"><label>Email</label><input data-profile-email class="input" value="${state.user.email}"/></div><div class="field"><label>No. HP</label><input data-profile-phone class="input" value="${state.user.phone}"/></div><div class="field"><label>Sekolah</label><input data-profile-school class="input" value="${state.user.school}"/></div><div class="field"><label>Jabatan</label><input data-profile-position class="input" value="${state.user.position}"/></div></div></section>
  <section class="card pad"><div class="section-title"><div><h3>Ringkasan Kompetensi</h3><p>Digital training record.</p></div></div><div class="kpi-grid" style="grid-template-columns:1fr 1fr">${kpi('Pelatihan','12','Riwayat','▣')}${kpi('Sertifikat','8','Terbit','◇')}${kpi('Total JP','64','Akumulasi','✓')}${kpi('Mendatang','2','Terdaftar','◎')}</div></section></div>`, 'Profil Saya');
+}
+
+
+async function setAttendanceSession(trainingId,open){
+ if(!db){toast('Backend belum dikonfigurasi');return;}
+ const {data,error}=await db.rpc('set_attendance_session',{p_training_id:trainingId,p_open:open});
+ if(error){toast(error.message);return;}
+ await loadData(); state.activeTrainingId=trainingId; state.attendanceOpen=open; render(); toast(open?'Sesi absensi dibuka':'Sesi absensi ditutup');
+}
+
+async function saveProfile(){
+ if(!db){toast('Backend belum dikonfigurasi');return;}
+ const payload={name:document.querySelector('[data-profile-name]')?.value||state.user.name,nip:document.querySelector('[data-profile-nip]')?.value||state.user.nip,email:document.querySelector('[data-profile-email]')?.value||state.user.email,phone:document.querySelector('[data-profile-phone]')?.value||state.user.phone,school:document.querySelector('[data-profile-school]')?.value||state.user.school,position:document.querySelector('[data-profile-position]')?.value||state.user.position};
+ const {error}=await db.from('profiles').update(payload).eq('id',state.user.id); if(error){toast(error.message);return;} state.user={...state.user,...payload}; toast('Perubahan profil disimpan'); render();
 }
 
 function helpPage(){
  return shell(`<div class="page-head"><div><div class="eyebrow">Bantuan</div><h1>Pusat Bantuan</h1><p>Panduan singkat penggunaan DiklatHub.</p></div></div>
  <div class="grid-2"><section class="card pad faq"><details open><summary>Bagaimana cara mendaftar pelatihan?</summary><p>Buka Pelatihan Tersedia, pilih kegiatan, lalu klik Daftar Pelatihan. Sistem menggunakan data profil Anda, sehingga tidak perlu mengisi ulang nama, NIP, sekolah, dan jabatan.</p></details><details><summary>Bagaimana cara melakukan absensi?</summary><p>Pada hari H, admin membuka sesi absensi. Tombol Scan QR Absensi akan muncul di Pelatihan Saya. Setelah scan valid, status menjadi Hadir.</p></details><details><summary>Kenapa sertifikat saya belum tersedia?</summary><p>Sertifikat terbit otomatis setelah pelatihan selesai dan syarat kehadiran terpenuhi. Bila status masih diproses, Anda tidak perlu menekan tombol generate.</p></details><details><summary>Bagaimana jika data profil salah?</summary><p>Perbarui data yang diizinkan pada Profil Saya atau hubungi Admin DiklatHub untuk data yang membutuhkan verifikasi.</p></details></section>
  <section class="card pad"><div class="section-title"><div><h3>Hubungi Admin</h3><p>Dinas Pendidikan Kota Padang Panjang</p></div></div><div class="callout"><h4>Butuh bantuan lebih lanjut?</h4><p>Silakan hubungi Admin DiklatHub melalui kanal resmi Dinas Pendidikan.</p><button class="btn primary sm" style="margin-top:12px">Hubungi Admin</button></div></section></div>`, 'Bantuan');
+}
+
+function exportCurrentTable(){
+ const table=document.querySelector('table'); if(!table){toast('Tidak ada data untuk diekspor');return;}
+ const rows=[...table.querySelectorAll('tr')].map(tr=>[...tr.children].map(td=>`"${td.innerText.replaceAll('"','""')}"`).join(','));
+ const blob=new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`diklathub-${Date.now()}.csv`; a.click(); URL.revokeObjectURL(a.href);
 }
 
 function render(){
@@ -716,7 +706,7 @@ function render(){
  }
  window.scrollTo({top:0});
 }
-render();
+initApp();
 </script>
 </body>
 </html>
