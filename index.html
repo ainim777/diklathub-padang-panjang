@@ -1,39 +1,722 @@
 <!doctype html>
 <html lang="id">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DiklatHub Padang Panjang</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>DiklatHub Padang Panjang — Interactive HTML Mockup</title>
 <style>
-:root{--g:#62b946;--dg:#247a38;--lg:#eaf6e5;--soft:#f4faf1;--ink:#263238;--muted:#6b7280;--line:#e5e7eb}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,sans-serif;color:var(--ink);background:#fff}button{font:inherit;cursor:pointer}
-.nav{height:72px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 6%;position:sticky;top:0;background:#fff;z-index:5}
-.brand{display:flex;align-items:center;gap:12px;font-weight:800}.logo{width:42px;height:42px;border-radius:12px;background:var(--g);color:white;display:grid;place-items:center;font-weight:900}.brand small{display:block;color:var(--muted);font-weight:500;font-size:11px}.links{display:flex;gap:28px;font-size:14px}.actions{display:flex;gap:10px}.btn{border:0;border-radius:10px;padding:11px 18px;font-weight:700}.outline{background:#fff;border:1px solid var(--line)}.primary{background:var(--g);color:#fff}
-.hero{background:linear-gradient(120deg,var(--soft),#fff);padding:72px 6% 64px;display:grid;grid-template-columns:1.15fr .85fr;gap:50px;align-items:center}.eyebrow{color:var(--dg);font-weight:800;font-size:13px}.hero h1{font-size:48px;line-height:1.08;margin:12px 0 18px;max-width:650px}.hero p{font-size:17px;color:var(--muted);line-height:1.7;max-width:650px}.hero .actions{margin-top:28px}.visual{background:#fff;border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 18px 50px #247a3814}.mock{background:var(--soft);border-radius:18px;padding:20px}.mockbar{height:12px;width:42%;background:var(--g);border-radius:10px;margin-bottom:22px}.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}.num{font-size:26px;font-weight:800}.muted{color:var(--muted);font-size:12px}
-.section{padding:64px 6%}.section h2{text-align:center;font-size:30px;margin:0 0 10px}.lead{text-align:center;color:var(--muted);margin:0 auto 34px;max-width:680px}.catalog{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.training{border:1px solid var(--line);border-radius:18px;padding:22px;background:#fff}.tag{display:inline-block;background:var(--lg);color:var(--dg);font-size:11px;font-weight:800;padding:6px 9px;border-radius:999px}.training h3{margin:15px 0 10px}.training p{color:var(--muted);font-size:13px;line-height:1.6}.meta{font-size:12px;color:var(--muted);line-height:1.8}
-.footer{background:#183b20;color:#dcebdc;padding:32px 6%;display:flex;justify-content:space-between;gap:20px}.footer b{color:#fff}
-.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:20}.modal.open{display:flex}.box{background:#fff;border-radius:20px;padding:28px;width:min(420px,90vw)}.box h2{margin-top:0}.role{display:grid;grid-template-columns:1fr 1fr;gap:12px}.role button{padding:20px;border:1px solid var(--line);background:#fff;border-radius:14px;font-weight:800}.role button:hover{border-color:var(--g);background:var(--soft)}
-.dashboard{display:none;min-height:100vh;background:#f7faf6}.dashnav{height:70px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 4%}.dashbody{padding:35px 5%}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.kpi{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px}.kpi strong{font-size:28px}.table{margin-top:24px;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}.row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;padding:16px 20px;border-bottom:1px solid var(--line);font-size:13px}.row:last-child{border:0}.back{color:var(--dg);font-weight:700}
-@media(max-width:800px){.hero{grid-template-columns:1fr;padding-top:45px}.hero h1{font-size:38px}.catalog{grid-template-columns:1fr}.links{display:none}.kpis{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr 1fr}.footer{flex-direction:column}}
+:root{
+  --green:#62B946;--green-deep:#247A38;--green-soft:#EAF6E5;--green-pale:#F4FAF1;
+  --ink:#263238;--muted:#6B7280;--line:#E5E7EB;--bg:#F7F9F7;--white:#fff;
+  --amber:#D18A00;--amber-bg:#FFF6DE;--red:#C84D4D;--red-bg:#FDECEC;--blue:#2F6FED;--blue-bg:#EDF3FF;
+  --shadow:0 10px 30px rgba(31,65,45,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+a{color:inherit}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--green-deep)}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap}
+.badge.green{background:var(--green-soft);color:var(--green-deep)}
+.badge.gray{background:#F1F3F5;color:#68717B}
+.badge.amber{background:var(--amber-bg);color:#9C6900}
+.badge.red{background:var(--red-bg);color:var(--red)}
+.badge.blue{background:var(--blue-bg);color:var(--blue)}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:800;font-size:13px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.18s}
+.btn:hover{transform:translateY(-1px)}
+.btn.primary{background:var(--green);color:white;box-shadow:0 8px 18px rgba(98,185,70,.18)}
+.btn.secondary{background:white;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost{background:transparent;color:var(--green-deep)}
+.btn.danger{background:var(--red);color:#fff}
+.btn.sm{padding:7px 10px;border-radius:8px;font-size:12px}
+.btn.block{width:100%}
+.card{background:var(--white);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.card.pad{padding:20px}
+.input,.select,.textarea{width:100%;border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 12px;color:var(--ink);outline:none}
+.input:focus,.select:focus,.textarea:focus{border-color:#9BD383;box-shadow:0 0 0 3px rgba(98,185,70,.10)}
+.textarea{min-height:92px;resize:vertical}
+.field label{display:block;font-size:12px;font-weight:800;margin:0 0 7px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.form-grid .full{grid-column:1/-1}
+.sep{height:1px;background:var(--line);margin:18px 0}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{padding:13px 12px;text-align:left;border-bottom:1px solid #EEF1EE;font-size:12px;vertical-align:top}
+th{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:900;background:#FBFCFB}
+tr:hover td{background:#FCFDFC}
+.app{min-height:100vh}
+.top-strip{height:4px;background:linear-gradient(90deg,var(--green),#9BCB55)}
+.sidebar{position:fixed;left:0;top:4px;bottom:0;width:250px;background:#fff;border-right:1px solid var(--line);padding:18px 14px;overflow:auto;z-index:10}
+.brand{display:flex;align-items:center;gap:11px;padding:5px 8px 22px}
+.brand-mark{width:42px;height:42px;border-radius:12px;background:var(--green-soft);display:grid;place-items:center;color:var(--green-deep);font-weight:900;font-size:20px}
+.brand b{font-size:16px}
+.brand small{display:block;color:var(--muted);font-size:10px;line-height:1.35;margin-top:3px}
+.nav-label{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#98A19A;font-weight:900;padding:14px 11px 5px}
+.nav-item{width:100%;border:0;background:transparent;padding:10px 12px;border-radius:10px;display:flex;align-items:center;gap:10px;text-align:left;color:#55605B;font-size:13px;font-weight:700;margin:2px 0}
+.nav-item:hover{background:#F7FAF6}
+.nav-item.active{background:var(--green-soft);color:var(--green-deep)}
+.nav-icon{width:20px;height:20px;border-radius:6px;background:#F2F5F2;display:grid;place-items:center;font-size:10px;font-weight:900}
+.nav-item.active .nav-icon{background:#D9EFD1}
+.sidebar-footer{margin-top:24px;border-top:1px solid var(--line);padding:16px 9px 5px}
+.portal-switch{display:flex;gap:6px;background:#F2F5F2;border-radius:10px;padding:4px}
+.portal-switch button{flex:1;border:0;background:transparent;border-radius:8px;padding:7px 6px;font-size:10px;font-weight:900;color:var(--muted)}
+.portal-switch button.active{background:#fff;color:var(--green-deep);box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.main{margin-left:250px;min-height:100vh}
+.topbar{height:68px;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:8}
+.breadcrumb{font-size:12px;color:var(--muted)}
+.top-actions{display:flex;align-items:center;gap:10px}
+.icon-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;font-weight:900;color:#68716C;position:relative}
+.notify-dot{position:absolute;right:7px;top:6px;width:7px;height:7px;border-radius:50%;background:var(--green);border:2px solid #fff}
+.user-pill{display:flex;align-items:center;gap:10px;border-left:1px solid var(--line);padding-left:12px}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--green-soft);color:var(--green-deep);display:grid;place-items:center;font-weight:900;font-size:12px}
+.user-pill b{font-size:12px;display:block}.user-pill span{font-size:10px;color:var(--muted)}
+.content{padding:28px;max-width:1500px;margin:auto}
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:22px}
+.page-head h1{font-size:25px;line-height:1.2;margin:2px 0 6px}.page-head p{margin:0;color:var(--muted);font-size:13px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}
+.kpi{padding:17px}
+.kpi-top{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:11px;font-weight:800}
+.kpi-icon{width:34px;height:34px;border-radius:10px;background:var(--green-pale);display:grid;place-items:center;color:var(--green-deep);font-weight:900}
+.kpi-num{font-size:28px;font-weight:900;margin:7px 0 3px;letter-spacing:-.03em}
+.kpi-foot{font-size:10px;color:var(--green-deep);font-weight:800}
+.grid-2{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.85fr);gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.section-title h3{margin:0;font-size:15px}.section-title p{margin:4px 0 0;color:var(--muted);font-size:11px}
+.link{color:var(--green-deep);font-size:11px;font-weight:900;cursor:pointer}
+.activity{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid #EEF1EE}
+.activity:last-child{border-bottom:0}
+.activity-mark{width:10px;height:10px;border-radius:50%;background:var(--green);margin-top:4px;box-shadow:0 0 0 5px var(--green-pale)}
+.activity b{font-size:11px}.activity p{font-size:10px;color:var(--muted);margin:3px 0 0}
+.toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.toolbar .grow{flex:1;min-width:220px}
+.status-step{display:flex;gap:7px;flex-wrap:wrap}
+.status-step span{padding:6px 9px;border-radius:8px;background:#F2F4F2;color:#7A827D;font-size:10px;font-weight:900}
+.status-step span.current{background:var(--green-soft);color:var(--green-deep)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow:auto}
+.tab{border:0;background:transparent;padding:10px 13px;font-size:11px;font-weight:900;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+.tab.active{color:var(--green-deep);border-bottom-color:var(--green)}
+.info-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.info-box{padding:13px;border:1px solid var(--line);border-radius:12px;background:#FCFDFC}
+.info-box small{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-weight:900;margin-bottom:5px}
+.info-box b{font-size:12px}
+.training-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.training-card{padding:17px;display:flex;flex-direction:column;min-height:240px}
+.training-card h3{font-size:15px;line-height:1.35;margin:10px 0 8px}
+.training-meta{display:grid;gap:6px;margin:7px 0 14px}
+.meta-row{display:flex;gap:8px;font-size:11px;color:var(--muted)}
+.capacity{margin-top:auto}
+.capacity-row{display:flex;justify-content:space-between;font-size:10px;font-weight:800;margin-bottom:6px}
+.bar{height:7px;border-radius:99px;background:#EDF0ED;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--green);border-radius:99px}
+.training-actions{display:flex;gap:8px;margin-top:14px}
+.callout{border:1px solid #CDE6C4;background:var(--green-pale);border-radius:14px;padding:15px}
+.callout h4{margin:0 0 5px;font-size:13px}.callout p{margin:0;color:#5F6A62;font-size:11px}
+.timeline{display:grid;gap:10px}
+.timeline-row{display:grid;grid-template-columns:75px 1fr;gap:10px}
+.timeline-row time{font-size:10px;color:var(--muted);font-weight:900;padding-top:2px}
+.timeline-row div{font-size:11px}
+.cert-card{padding:17px;position:relative;overflow:hidden}
+.cert-card:before{content:"";position:absolute;right:-35px;top:-35px;width:110px;height:110px;border-radius:50%;background:var(--green-soft)}
+.cert-card h3{margin:8px 0 5px;font-size:14px;position:relative}.cert-card p{font-size:10px;color:var(--muted);position:relative}
+.cert-actions{display:flex;gap:7px;margin-top:12px;position:relative}
+.profile-header{display:flex;align-items:center;gap:14px}
+.profile-avatar{width:68px;height:68px;border-radius:18px;background:var(--green-soft);display:grid;place-items:center;color:var(--green-deep);font-size:20px;font-weight:900}
+.faq details{border-bottom:1px solid var(--line);padding:11px 0}.faq summary{font-size:12px;font-weight:900;cursor:pointer}.faq p{font-size:11px;color:var(--muted);line-height:1.55}
+.login-page{min-height:100vh;display:grid;grid-template-columns:1.15fr .85fr;background:#fff}
+.login-hero{background:linear-gradient(140deg,#F4FAF1,#EAF6E5);padding:58px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+.hero-orb{position:absolute;width:340px;height:340px;border-radius:50%;background:rgba(98,185,70,.11);right:-100px;bottom:-80px}
+.login-hero h1{font-size:42px;line-height:1.1;margin:20px 0 14px;max-width:620px;letter-spacing:-.04em}
+.login-hero p{max-width:620px;color:#5D685F;font-size:15px;line-height:1.65}
+.hero-points{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:650px}
+.hero-point{padding:14px;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.9);border-radius:14px}
+.hero-point b{font-size:11px;display:block}.hero-point span{font-size:10px;color:var(--muted)}
+.login-panel{padding:44px;display:flex;align-items:center;justify-content:center}
+.login-box{width:100%;max-width:390px}
+.login-box h2{font-size:26px;margin:0 0 7px}.login-box>p{font-size:12px;color:var(--muted);margin:0 0 24px}
+.role-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0}
+.role-card{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px;text-align:left}
+.role-card.active{border-color:#A9D999;background:var(--green-pale)}
+.role-card b{font-size:11px;display:block}.role-card span{font-size:9px;color:var(--muted)}
+.demo-note{margin-top:18px;padding:12px;border:1px dashed #B6C1B9;border-radius:10px;font-size:10px;color:var(--muted);background:#FAFCFA}
+.modal-backdrop{position:fixed;inset:0;background:rgba(24,35,28,.42);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}
+.modal-backdrop.show{display:flex}
+.modal{background:#fff;border-radius:18px;max-width:820px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 20px 70px rgba(0,0,0,.22)}
+.modal-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2}
+.modal-head h2{margin:0;font-size:18px}.modal-head p{margin:5px 0 0;font-size:11px;color:var(--muted)}
+.modal-body{padding:20px}
+.close-btn{border:1px solid var(--line);background:#fff;width:34px;height:34px;border-radius:9px;font-size:16px}
+.toast{position:fixed;right:22px;bottom:22px;background:#1F3D28;color:#fff;border-radius:12px;padding:12px 15px;box-shadow:0 14px 40px rgba(0,0,0,.22);font-size:12px;font-weight:800;transform:translateY(120px);opacity:0;transition:.25s;z-index:200}
+.toast.show{transform:translateY(0);opacity:1}
+.cert-preview{border:12px solid #F0F6ED;outline:1px solid #B9D6AF;padding:44px 34px;text-align:center;background:#fff;position:relative;min-height:520px}
+.cert-preview:before,.cert-preview:after{content:"";position:absolute;width:90px;height:90px;border-radius:50%;background:var(--green-pale)}
+.cert-preview:before{left:-35px;top:-35px}.cert-preview:after{right:-35px;bottom:-35px}
+.cert-preview h1{font-family:Georgia,serif;letter-spacing:.08em;font-size:34px;color:var(--green-deep);margin:22px 0 14px}
+.cert-preview h2{font-size:24px;margin:16px 0}.cert-preview .cert-no{font-size:11px;font-weight:900}
+.qr{width:82px;height:82px;margin:15px auto 0;background:
+linear-gradient(90deg,#1d2b20 10px,transparent 10px) 0 0/20px 20px,
+linear-gradient(#1d2b20 10px,transparent 10px) 0 0/20px 20px,
+linear-gradient(90deg,transparent 10px,#1d2b20 10px) 10px 10px/20px 20px,
+linear-gradient(transparent 10px,#1d2b20 10px) 10px 10px/20px 20px;
+border:7px solid white;outline:1px solid #D9DDD9}
+.verify-page{min-height:100vh;display:grid;place-items:center;padding:24px;background:var(--green-pale)}
+.verify-card{max-width:620px;width:100%;padding:26px}
+.verify-status{display:flex;align-items:center;gap:10px;padding:14px;border-radius:12px;background:var(--green-soft);color:var(--green-deep);font-weight:900;margin:18px 0}
+.empty{padding:36px;text-align:center;color:var(--muted)}
+.mobile-menu{display:none}
+@media(max-width:1100px){
+ .kpi-grid{grid-template-columns:repeat(2,1fr)}
+ .training-cards,.grid-3{grid-template-columns:repeat(2,1fr)}
+ .info-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:820px){
+ .sidebar{transform:translateX(-100%);transition:.2s;box-shadow:8px 0 30px rgba(0,0,0,.08)}
+ .sidebar.open{transform:translateX(0)}
+ .main{margin-left:0}
+ .mobile-menu{display:grid}
+ .login-page{grid-template-columns:1fr}.login-hero{display:none}.login-panel{padding:24px;min-height:100vh}
+ .grid-2,.training-cards,.grid-3,.info-grid{grid-template-columns:1fr}
+ .form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}
+ .topbar{padding:0 16px}.content{padding:18px}.user-pill div:not(.avatar){display:none}
+}
+@media(max-width:520px){
+ .kpi-grid{grid-template-columns:1fr 1fr;gap:9px}.kpi{padding:13px}.kpi-num{font-size:22px}
+ .page-head{flex-direction:column}.page-head .btn{width:100%}
+ .toolbar>*{width:100%!important}
+ .training-actions{flex-direction:column}.training-actions .btn{width:100%}
+}
+@media print{
+ body *{visibility:hidden}
+ .printable,.printable *{visibility:visible}
+ .printable{position:absolute;left:0;top:0;width:100%}
+ .cert-preview{outline:none;border:6px solid #dfeadb}
+}
 </style>
 </head>
 <body>
-<div id="public">
-<header class="nav"><div class="brand"><div class="logo">D</div><div>DiklatHub <small>PADANG PANJANG</small></div></div><nav class="links"><span>Beranda</span><span>Pelatihan</span><span>Informasi</span><span>Bantuan</span></nav><div class="actions"><button class="btn outline" onclick="login()">Masuk</button><button class="btn primary" onclick="login()">Daftar</button></div></header>
-<section class="hero"><div><div class="eyebrow">SISTEM MANAJEMEN PELATIHAN GTK</div><h1>Tingkatkan Kompetensi Bersama DiklatHub</h1><p>Satu platform untuk pelatihan, pendaftaran, kehadiran, sertifikasi, dan pelaporan Guru & Tenaga Kependidikan Kota Padang Panjang.</p><div class="actions"><button class="btn primary" onclick="document.getElementById('pelatihan').scrollIntoView()">Lihat Pelatihan</button><button class="btn outline" onclick="login()">Masuk ke DiklatHub</button></div></div>
-<div class="visual"><div class="mock"><div class="mockbar"></div><div class="cards"><div class="card"><div class="num">12</div><div class="muted">Pelatihan Tersedia</div></div><div class="card"><div class="num">428</div><div class="muted">Peserta</div></div><div class="card"><div class="num">396</div><div class="muted">Sertifikat</div></div><div class="card"><div class="num">94%</div><div class="muted">Kehadiran</div></div></div></div></div></section>
-<section class="section" id="pelatihan"><h2>Pelatihan Terbaru</h2><p class="lead">Temukan program pengembangan kompetensi yang tersedia dan daftarkan diri secara digital.</p><div class="catalog">
-<div class="training"><span class="tag">KOMPETENSI</span><h3>Digital Teaching & AI for Educators</h3><p>Pemanfaatan teknologi dan AI secara praktis untuk mendukung pembelajaran.</p><div class="meta">📅 12–13 Oktober 2026<br>📍 Padang Panjang · Hybrid<br>👥 Kuota 40 peserta</div><button class="btn primary" style="margin-top:16px;width:100%" onclick="login()">Daftar Pelatihan</button></div>
-<div class="training"><span class="tag">PEDAGOGIK</span><h3>Active Learning untuk Guru SD</h3><p>Strategi pembelajaran aktif, kolaboratif, dan berpusat pada peserta didik.</p><div class="meta">📅 20 Oktober 2026<br>📍 Aula Dinas Pendidikan<br>👥 Kuota 30 peserta</div><button class="btn primary" style="margin-top:16px;width:100%" onclick="login()">Daftar Pelatihan</button></div>
-<div class="training"><span class="tag">MANAJEMEN</span><h3>School Leadership Essentials</h3><p>Penguatan kepemimpinan sekolah dan pengelolaan program peningkatan mutu.</p><div class="meta">📅 3–4 November 2026<br>📍 Padang Panjang<br>👥 Kuota 25 peserta</div><button class="btn primary" style="margin-top:16px;width:100%" onclick="login()">Daftar Pelatihan</button></div>
-</div></section>
-<footer class="footer"><div><b>DiklatHub Padang Panjang</b><br>Sistem Manajemen Pelatihan Guru & Tenaga Kependidikan</div><div>© 2026 Dinas Pendidikan Kota Padang Panjang</div></footer>
-</div>
-<div id="modal" class="modal"><div class="box"><h2>Masuk ke DiklatHub</h2><p class="muted" style="margin-bottom:22px">Satu login. Dashboard otomatis menyesuaikan peran akun.</p><div class="role"><button onclick="openDash('admin')">Admin<br><span class="muted">Kelola pelatihan</span></button><button onclick="openDash('guru')">Guru / Tendik<br><span class="muted">Ikuti pelatihan</span></button></div><button class="btn outline" style="width:100%;margin-top:14px" onclick="closeModal()">Batal</button></div></div>
-<div id="dashboard" class="dashboard"><header class="dashnav"><div class="brand"><div class="logo">D</div><div id="dashTitle">DiklatHub</div></div><button class="btn outline" onclick="backHome()">← Beranda</button></header><main class="dashbody"><div class="eyebrow" id="dashRole"></div><h1 id="welcome">Dashboard</h1><div class="kpis" id="kpis"></div><div class="table"><div class="row" style="font-weight:800;background:var(--soft)"><span>Pelatihan</span><span>Tanggal</span><span>Status</span><span>Aksi</span></div><div class="row"><span>Digital Teaching & AI for Educators</span><span>12 Okt 2026</span><span>Terbuka</span><span class="back">Lihat →</span></div><div class="row"><span>Active Learning untuk Guru SD</span><span>20 Okt 2026</span><span>Terbuka</span><span class="back">Lihat →</span></div></div></main></div>
+<div id="root"></div>
+<div id="modal" class="modal-backdrop" onclick="if(event.target===this) closeModal()"></div>
+<div id="toast" class="toast"></div>
+
 <script>
-function login(){document.getElementById('modal').classList.add('open')}
-function closeModal(){document.getElementById('modal').classList.remove('open')}
-function openDash(role){closeModal();document.getElementById('public').style.display='none';document.getElementById('dashboard').style.display='block';if(role==='admin'){document.getElementById('dashRole').textContent='ADMIN';document.getElementById('welcome').textContent='Selamat datang, Admin';document.getElementById('kpis').innerHTML='<div class="kpi"><strong>18</strong><br><span class="muted">Total Pelatihan</span></div><div class="kpi"><strong>428</strong><br><span class="muted">Total Pendaftar</span></div><div class="kpi"><strong>164</strong><br><span class="muted">Peserta Aktif</span></div><div class="kpi"><strong>396</strong><br><span class="muted">Sertifikat Terbit</span></div>'}else{document.getElementById('dashRole').textContent='GURU / TENDIK';document.getElementById('welcome').textContent='Selamat datang, Guru';document.getElementById('kpis').innerHTML='<div class="kpi"><strong>6</strong><br><span class="muted">Pelatihan Diikuti</span></div><div class="kpi"><strong>1</strong><br><span class="muted">Pelatihan Mendatang</span></div><div class="kpi"><strong>5</strong><br><span class="muted">Sertifikat</span></div><div class="kpi"><strong>42</strong><br><span class="muted">Jam Pelatihan</span></div>'}}
-function backHome(){document.getElementById('dashboard').style.display='none';document.getElementById('public').style.display='block'}
+const state = {
+  loggedIn:false,
+  portal:'admin',
+  page:'dashboard',
+  teacherPage:'teacher-dashboard',
+  activeTrainingId:1,
+  activeTrainingTab:'overview',
+  loginRole:'admin',
+  attendanceOpen:false,
+  certificateIssued:true,
+  user:{name:'Siti Rahma, S.Pd.',school:'SMPN 1 Padang Panjang',nip:'198709122010012004',position:'Guru Mata Pelajaran',email:'guru@diklathub.local',phone:'0812-3456-7890'},
+  trainings:[
+    {id:1,title:'Penyusunan Modul Ajar Berbasis Kurikulum Merdeka',category:'Pedagogik',date:'25 Okt 2026',start:'08.00',end:'16.00',location:'Aula Dinas Pendidikan',mode:'Offline',quota:50,participants:47,status:'REGISTRATION_OPEN',speaker:'Dr. Rina Yusnita, M.Pd.',institution:'Universitas Negeri Padang',jp:8,desc:'Pelatihan praktis untuk membantu guru menyusun modul ajar yang kontekstual, terstruktur, dan selaras dengan Kurikulum Merdeka.',requirements:'Guru SD/SMP, membawa laptop dan perangkat pembelajaran.'},
+    {id:2,title:'Pemanfaatan AI untuk Pembelajaran',category:'Teknologi',date:'31 Okt 2026',start:'08.00',end:'15.00',location:'SMPN 1 Padang Panjang',mode:'Offline',quota:50,participants:42,status:'REGISTRATION_OPEN',speaker:'Fajar Ramadhan, M.Kom.',institution:'Praktisi EdTech',jp:7,desc:'Pengenalan pemanfaatan AI secara aman dan praktis untuk perencanaan, materi, asesmen, dan produktivitas guru.',requirements:'Guru SD/SMP, memiliki akun email aktif dan membawa laptop.'},
+    {id:3,title:'Asesmen Pembelajaran yang Bermakna',category:'Evaluasi',date:'8 Nov 2026',start:'08.30',end:'15.30',location:'Aula Dinas Pendidikan',mode:'Hybrid',quota:40,participants:38,status:'REGISTRATION_OPEN',speaker:'Dr. Yuni Pratiwi, M.Pd.',institution:'Pengawas Sekolah',jp:7,desc:'Mengembangkan asesmen diagnostik, formatif, dan sumatif yang relevan serta mudah diterapkan.',requirements:'Guru dan tenaga kependidikan terkait.'},
+    {id:4,title:'Literasi Digital untuk Guru',category:'Teknologi',date:'12 Sep 2026',start:'08.00',end:'16.00',location:'Aula Dinas Pendidikan',mode:'Offline',quota:60,participants:58,status:'COMPLETED',speaker:'Arief Setiawan, M.T.',institution:'Dinas Kominfo',jp:8,desc:'Pelatihan literasi digital dan keamanan dasar untuk guru.',requirements:'Guru semua jenjang.'}
+  ],
+  registrations:[
+    {id:101,trainingId:4,name:'Siti Rahma, S.Pd.',school:'SMPN 1 Padang Panjang',status:'APPROVED',attendance:'PRESENT'},
+    {id:102,trainingId:1,name:'Siti Rahma, S.Pd.',school:'SMPN 1 Padang Panjang',status:'APPROVED',attendance:null},
+    {id:103,trainingId:1,name:'Rizki Pratama, S.Pd.',school:'SMPN 2 Padang Panjang',status:'APPROVED',attendance:'PRESENT'},
+    {id:104,trainingId:1,name:'Yuliana, S.Pd.',school:'SDN 03 Padang Panjang',status:'PENDING_APPROVAL',attendance:null},
+  ],
+  certificates:[
+    {id:201,trainingId:4,title:'Literasi Digital untuk Guru',date:'12 Sep 2026',number:'421.5/00017/DISDIK/2026',status:'PUBLISHED',name:'Siti Rahma, S.Pd.',nip:'198709122010012004',jp:8}
+  ]
+};
+
+const icons = {
+ dashboard:'⌂', training:'▣', participants:'♙', attendance:'✓', certificate:'◇', teacher:'♟', report:'▥', settings:'⚙',
+ catalogue:'⌕', mytraining:'◎', profile:'◉', help:'?', logout:'↪'
+};
+
+function fmtStatus(s){
+ const map={
+  REGISTRATION_OPEN:['Pendaftaran','green'],REGISTRATION_CLOSED:['Ditutup','gray'],ONGOING:['Berlangsung','blue'],COMPLETED:['Selesai','gray'],
+  DRAFT:['Draft','gray'],APPROVED:['Disetujui','green'],PENDING_APPROVAL:['Menunggu','amber'],REJECTED:['Ditolak','red'],
+  PRESENT:['Hadir','green'],ABSENT:['Tidak Hadir','red'],PUBLISHED:['Terbit','green'],REVOKED:['Dicabut','red']
+ };
+ const m=map[s]||[s,'gray'];
+ return `<span class="badge ${m[1]}"><span class="dot"></span>${m[0]}</span>`;
+}
+
+function trainingById(id){return state.trainings.find(t=>t.id===Number(id))}
+function myRegistration(trainingId){return state.registrations.find(r=>r.trainingId===Number(trainingId)&&r.name===state.user.name)}
+
+function toast(msg){
+ const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
+ setTimeout(()=>el.classList.remove('show'),2400);
+}
+
+function openModal(html){
+ const m=document.getElementById('modal');m.innerHTML=`<div class="modal">${html}</div>`;m.classList.add('show');
+}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+
+function login(){
+ state.loggedIn=true;
+ state.portal=state.loginRole==='teacher'?'teacher':'admin';
+ render();
+ toast(state.portal==='admin'?'Berhasil masuk sebagai Admin Dinas':'Berhasil masuk sebagai Guru/Tendik');
+}
+
+function logout(){state.loggedIn=false;render()}
+
+function setPortal(p){state.portal=p;render()}
+function setPage(p){state.page=p;render()}
+function setTeacherPage(p){state.teacherPage=p;render()}
+function openTraining(id,tab='overview'){state.activeTrainingId=Number(id);state.activeTrainingTab=tab;state.page='training-detail';render()}
+function setTrainingTab(tab){state.activeTrainingTab=tab;render()}
+
+function loginView(){
+ return `
+ <div class="login-page">
+  <section class="login-hero">
+   <div>
+    <div class="brand" style="padding:0">
+      <div class="brand-mark">D</div>
+      <div><b>DiklatHub Padang Panjang</b><small>Dinas Pendidikan Kota Padang Panjang</small></div>
+    </div>
+    <div style="margin-top:70px;position:relative;z-index:2">
+      <span class="badge green">Sistem Manajemen Pelatihan</span>
+      <h1>Pelatihan guru, lebih rapi dari pendaftaran sampai sertifikat.</h1>
+      <p>Satu platform untuk mengelola pelatihan, peserta, kehadiran, sertifikat otomatis, dan riwayat pengembangan kompetensi Guru & Tenaga Kependidikan.</p>
+      <div class="hero-points" style="margin-top:28px">
+        <div class="hero-point"><b>Pendaftaran Terintegrasi</b><span>Tanpa input ulang data peserta.</span></div>
+        <div class="hero-point"><b>Absensi Digital</b><span>QR check-in yang terhubung ke peserta.</span></div>
+        <div class="hero-point"><b>Sertifikat Otomatis</b><span>Nomor, nama, pelatihan dan QR terisi otomatis.</span></div>
+      </div>
+    </div>
+   </div>
+   <div class="small muted">Interactive HTML Mockup • Data hanya contoh untuk demonstrasi.</div>
+   <div class="hero-orb"></div>
+  </section>
+  <section class="login-panel">
+    <div class="login-box">
+      <div class="eyebrow">DiklatHub</div>
+      <h2>Masuk ke sistem</h2>
+      <p>Pilih role demo untuk melihat Portal Admin atau Portal Guru.</p>
+      <div class="role-cards">
+        <button class="role-card ${state.loginRole==='admin'?'active':''}" onclick="state.loginRole='admin';render()"><b>Admin Dinas</b><span>Kelola pelatihan & operasional</span></button>
+        <button class="role-card ${state.loginRole==='teacher'?'active':''}" onclick="state.loginRole='teacher';render()"><b>Guru / Tendik</b><span>Daftar, absensi & sertifikat</span></button>
+      </div>
+      <div class="field"><label>Email</label><input class="input" value="${state.loginRole==='admin'?'admin@diklathub.local':'guru@diklathub.local'}"/></div>
+      <div class="field" style="margin-top:13px"><label>Password</label><input type="password" class="input" value="demo1234"/></div>
+      <button class="btn primary block" style="margin-top:16px" onclick="login()">Masuk</button>
+      <div class="demo-note"><b>Demo mockup.</b> Login belum menggunakan backend. Seluruh tombol utama dibuat untuk mensimulasikan flow produk.</div>
+    </div>
+  </section>
+ </div>`;
+}
+
+function sidebar(){
+ const adminNav=[
+  ['dashboard','Dashboard','dashboard'],['trainings','Pelatihan','training'],['participants','Peserta','participants'],
+  ['attendance','Absensi','attendance'],['certificates','Sertifikat','certificate'],['teachers','Guru & Tendik','teacher'],
+  ['reports','Laporan','report'],['settings','Pengaturan','settings']
+ ];
+ const teacherNav=[
+  ['teacher-dashboard','Dashboard','dashboard'],['catalogue','Pelatihan Tersedia','catalogue'],['my-trainings','Pelatihan Saya','mytraining'],
+  ['my-certificates','Sertifikat Saya','certificate'],['profile','Profil Saya','profile'],['help','Bantuan','help']
+ ];
+ const nav=state.portal==='admin'?adminNav:teacherNav;
+ const active=state.portal==='admin'?state.page:state.teacherPage;
+ return `<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="brand-mark">D</div><div><b>DiklatHub</b><small>Dinas Pendidikan<br/>Kota Padang Panjang</small></div></div>
+  <div class="nav-label">${state.portal==='admin'?'Portal Admin':'Portal Guru / Tendik'}</div>
+  ${nav.map(n=>`<button class="nav-item ${active===n[0]?'active':''}" onclick="${state.portal==='admin'?`setPage('${n[0]}')`:`setTeacherPage('${n[0]}')`};document.getElementById('sidebar').classList.remove('open')"><span class="nav-icon">${icons[n[2]]}</span>${n[1]}</button>`).join('')}
+  <div class="sidebar-footer">
+    <div class="small muted" style="margin-bottom:8px">Demo portal</div>
+    <div class="portal-switch">
+      <button class="${state.portal==='admin'?'active':''}" onclick="setPortal('admin')">Admin</button>
+      <button class="${state.portal==='teacher'?'active':''}" onclick="setPortal('teacher')">Guru</button>
+    </div>
+    <button class="nav-item" style="margin-top:10px" onclick="logout()"><span class="nav-icon">${icons.logout}</span>Keluar</button>
+  </div>
+ </aside>`;
+}
+
+function topbar(title){
+ return `<header class="topbar">
+   <div style="display:flex;align-items:center;gap:10px">
+    <button class="icon-btn mobile-menu" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+    <div class="breadcrumb">DiklatHub / <b>${title}</b></div>
+   </div>
+   <div class="top-actions">
+    <button class="icon-btn">◌<span class="notify-dot"></span></button>
+    <div class="user-pill"><div class="avatar">${state.portal==='admin'?'AD':'SR'}</div><div><b>${state.portal==='admin'?'Admin Dinas':state.user.name}</b><span>${state.portal==='admin'?'Administrator':state.user.school}</span></div></div>
+   </div>
+ </header>`;
+}
+
+function shell(content,title){return `<div class="top-strip"></div>${sidebar()}<main class="main">${topbar(title)}<div class="content">${content}</div></main>`}
+
+function adminDashboard(){
+ const rows=state.trainings.slice(0,3).map(t=>`<tr><td><b>${t.title}</b><div class="small muted">${t.category}</div></td><td>${t.date}</td><td>${t.participants}/${t.quota}</td><td>${fmtStatus(t.status)}</td><td><button class="btn ghost sm" onclick="openTraining(${t.id})">Detail →</button></td></tr>`).join('');
+ return shell(`
+  <div class="page-head"><div><div class="eyebrow">Portal Admin</div><h1>Selamat Datang, Admin</h1><p>Kelola pelatihan Guru & Tenaga Kependidikan dalam satu platform.</p></div><button class="btn primary" onclick="createTrainingModal()">＋ Buat Pelatihan</button></div>
+  <div class="kpi-grid">
+    ${kpi('Total Pelatihan','24','12 aktif','▣')}
+    ${kpi('Total Peserta','846','+18% tahun ini','♙')}
+    ${kpi('Peserta Hadir','782','92% attendance','✓')}
+    ${kpi('Sertifikat Terbit','735','94% peserta hadir','◇')}
+  </div>
+  <div class="grid-2">
+    <section class="card pad">
+      <div class="section-title"><div><h3>Pelatihan Terdekat</h3><p>Kegiatan yang perlu dipantau admin.</p></div><span class="link" onclick="setPage('trainings')">Lihat semua →</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Pelatihan</th><th>Tanggal</th><th>Peserta</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+    </section>
+    <section class="card pad">
+      <div class="section-title"><div><h3>Aktivitas Terbaru</h3><p>Update operasional DiklatHub.</p></div></div>
+      ${activity('5 guru baru mendaftar','Penyusunan Modul Ajar • 10 menit lalu')}
+      ${activity('Absensi berhasil dicatat','Rizki Pratama • 25 menit lalu')}
+      ${activity('58 sertifikat diterbitkan','Literasi Digital untuk Guru • 1 jam lalu')}
+      ${activity('Pelatihan baru dipublikasikan','Asesmen Pembelajaran • 3 jam lalu')}
+    </section>
+  </div>`, 'Dashboard');
+}
+function kpi(label,num,foot,icon){return `<div class="card kpi"><div class="kpi-top"><span>${label}</span><span class="kpi-icon">${icon}</span></div><div class="kpi-num">${num}</div><div class="kpi-foot">${foot}</div></div>`}
+function activity(a,b){return `<div class="activity"><span class="activity-mark"></span><div><b>${a}</b><p>${b}</p></div></div>`}
+
+function adminTrainings(){
+ const rows=state.trainings.map(t=>`<tr><td><b>${t.title}</b><div class="small muted">${t.category} • ${t.mode}</div></td><td>${t.date}</td><td>${t.quota}</td><td>${t.participants}</td><td>${fmtStatus(t.status)}</td><td><button class="btn secondary sm" onclick="openTraining(${t.id})">Kelola</button></td></tr>`).join('');
+ return shell(`
+  <div class="page-head"><div><div class="eyebrow">Manajemen</div><h1>Pelatihan</h1><p>Buat, publikasikan, dan kelola seluruh siklus pelatihan.</p></div><button class="btn primary" onclick="createTrainingModal()">＋ Buat Pelatihan</button></div>
+  <section class="card pad">
+   <div class="toolbar">
+    <input class="input grow" placeholder="Cari nama pelatihan..."/>
+    <select class="select" style="width:180px"><option>Semua Status</option><option>Pendaftaran</option><option>Berlangsung</option><option>Selesai</option></select>
+    <select class="select" style="width:170px"><option>Semua Kategori</option><option>Pedagogik</option><option>Teknologi</option><option>Evaluasi</option></select>
+   </div>
+   <div class="table-wrap"><table><thead><tr><th>Pelatihan</th><th>Tanggal</th><th>Kuota</th><th>Peserta</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${rows}</tbody></table></div>
+  </section>`, 'Pelatihan');
+}
+
+function createTrainingModal(){
+ openModal(`<div class="modal-head"><div><h2>Buat Pelatihan Baru</h2><p>Data ini akan digunakan dari publikasi sampai sertifikat.</p></div><button class="close-btn" onclick="closeModal()">×</button></div>
+ <div class="modal-body">
+  <div class="eyebrow">Informasi</div><div class="form-grid" style="margin-top:12px">
+   <div class="field full"><label>Nama Pelatihan</label><input id="newTitle" class="input" placeholder="Contoh: Penguatan Literasi Numerasi"/></div>
+   <div class="field"><label>Kategori</label><select class="select"><option>Pedagogik</option><option>Teknologi</option><option>Evaluasi</option><option>Profesional</option></select></div>
+   <div class="field"><label>Target Peserta</label><input class="input" value="Guru SD/SMP"/></div>
+   <div class="field full"><label>Deskripsi</label><textarea class="textarea" placeholder="Tujuan dan gambaran kegiatan..."></textarea></div>
+  </div>
+  <div class="sep"></div><div class="eyebrow">Jadwal & Lokasi</div>
+  <div class="form-grid" style="margin-top:12px">
+   <div class="field"><label>Tanggal Mulai</label><input type="date" class="input" value="2026-11-15"/></div>
+   <div class="field"><label>Tanggal Selesai</label><input type="date" class="input" value="2026-11-15"/></div>
+   <div class="field"><label>Waktu Mulai</label><input type="time" class="input" value="08:00"/></div>
+   <div class="field"><label>Waktu Selesai</label><input type="time" class="input" value="16:00"/></div>
+   <div class="field"><label>Mode</label><select class="select"><option>Offline</option><option>Online</option><option>Hybrid</option></select></div>
+   <div class="field"><label>Lokasi</label><input class="input" value="Aula Dinas Pendidikan"/></div>
+  </div>
+  <div class="sep"></div><div class="eyebrow">Peserta & Narasumber</div>
+  <div class="form-grid" style="margin-top:12px">
+   <div class="field"><label>Kuota</label><input id="newQuota" type="number" class="input" value="50"/></div>
+   <div class="field"><label>Approval</label><select class="select"><option>Tidak — langsung disetujui</option><option>Ya — perlu approval admin</option></select></div>
+   <div class="field"><label>Nama Narasumber</label><input class="input" placeholder="Nama narasumber"/></div>
+   <div class="field"><label>Instansi</label><input class="input" placeholder="Instansi"/></div>
+   <div class="field"><label>Total JP</label><input class="input" type="number" value="8"/></div>
+   <div class="field"><label>Sertifikat</label><select class="select"><option>Aktifkan sertifikat otomatis</option><option>Tanpa sertifikat</option></select></div>
+  </div>
+  <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px">
+   <button class="btn secondary" onclick="closeModal();toast('Pelatihan disimpan sebagai draft')">Simpan Draft</button>
+   <button class="btn primary" onclick="saveNewTraining()">Publish Pelatihan</button>
+  </div>
+ </div>`);
+}
+
+function saveNewTraining(){
+ const title=document.getElementById('newTitle').value||'Pelatihan Baru';
+ const quota=Number(document.getElementById('newQuota').value||50);
+ const id=Math.max(...state.trainings.map(t=>t.id))+1;
+ state.trainings.unshift({id,title,category:'Pedagogik',date:'15 Nov 2026',start:'08.00',end:'16.00',location:'Aula Dinas Pendidikan',mode:'Offline',quota,participants:0,status:'REGISTRATION_OPEN',speaker:'Belum ditentukan',institution:'-',jp:8,desc:'Deskripsi pelatihan baru.',requirements:'Guru/Tendik sesuai target pelatihan.'});
+ closeModal();toast('Pelatihan berhasil dipublikasikan');state.page='trainings';render();
+}
+
+function trainingDetail(){
+ const t=trainingById(state.activeTrainingId);
+ const tabs=[['overview','Overview'],['participants','Peserta'],['attendance','Absensi'],['certificates','Sertifikat'],['report','Laporan']];
+ let body='';
+ if(state.activeTrainingTab==='overview') body=trainingOverview(t);
+ if(state.activeTrainingTab==='participants') body=trainingParticipants(t);
+ if(state.activeTrainingTab==='attendance') body=trainingAttendance(t);
+ if(state.activeTrainingTab==='certificates') body=trainingCertificates(t);
+ if(state.activeTrainingTab==='report') body=trainingReport(t);
+ return shell(`
+  <div class="page-head"><div><div class="eyebrow">${t.category}</div><h1>${t.title}</h1><p>${t.date} • ${t.start}–${t.end} WIB • ${t.location}</p><div style="margin-top:9px">${fmtStatus(t.status)}</div></div>
+   <div style="display:flex;gap:8px"><button class="btn secondary" onclick="toast('Mode edit dibuka')">Edit</button>${t.status!=='COMPLETED'?`<button class="btn primary" onclick="completeTraining(${t.id})">Tandai Selesai</button>`:''}</div></div>
+  <div class="card pad">
+   <div class="status-step"><span>Draft</span><span class="${t.status==='REGISTRATION_OPEN'?'current':''}">Pendaftaran</span><span class="${t.status==='ONGOING'?'current':''}">Berlangsung</span><span class="${t.status==='COMPLETED'?'current':''}">Selesai</span></div>
+   <div class="tabs" style="margin-top:18px">${tabs.map(x=>`<button class="tab ${state.activeTrainingTab===x[0]?'active':''}" onclick="setTrainingTab('${x[0]}')">${x[1]}</button>`).join('')}</div>
+   ${body}
+  </div>`, 'Detail Pelatihan');
+}
+function trainingOverview(t){
+ return `<div class="info-grid">
+  ${info('Tanggal',t.date)}${info('Waktu',`${t.start}–${t.end} WIB`)}${info('Lokasi',t.location)}
+  ${info('Mode',t.mode)}${info('Kuota',`${t.participants} / ${t.quota} peserta`)}${info('Total JP',`${t.jp} JP`)}
+ </div>
+ <div class="sep"></div>
+ <div class="grid-2">
+  <div><h3 style="font-size:14px;margin:0 0 7px">Tentang Pelatihan</h3><p class="muted small" style="line-height:1.7">${t.desc}</p>
+  <h3 style="font-size:14px;margin:18px 0 7px">Persyaratan</h3><p class="muted small">${t.requirements}</p></div>
+  <div class="callout"><div class="eyebrow">Narasumber</div><h4 style="margin-top:8px">${t.speaker}</h4><p>${t.institution}</p></div>
+ </div>`;
+}
+function info(a,b){return `<div class="info-box"><small>${a}</small><b>${b}</b></div>`}
+
+function trainingParticipants(t){
+ const regs=state.registrations.filter(r=>r.trainingId===t.id);
+ const rows=regs.length?regs.map(r=>`<tr><td><b>${r.name}</b></td><td>${r.school}</td><td>${fmtStatus(r.status)}</td><td>${r.attendance?fmtStatus(r.attendance):'<span class="muted">Belum ada</span>'}</td><td>${r.status==='PENDING_APPROVAL'?`<button class="btn primary sm" onclick="approveRegistration(${r.id})">Approve</button>`:'<button class="btn secondary sm">Detail</button>'}</td></tr>`).join(''):`<tr><td colspan="5"><div class="empty">Belum ada peserta.</div></td></tr>`;
+ return `<div class="toolbar"><input class="input grow" placeholder="Cari nama/NIP/sekolah..."/><select class="select" style="width:190px"><option>Semua Status</option><option>Approved</option><option>Pending</option></select><button class="btn secondary">Export Excel</button></div>
+ <div class="table-wrap"><table><thead><tr><th>Nama</th><th>Sekolah</th><th>Pendaftaran</th><th>Kehadiran</th><th>Aksi</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function approveRegistration(id){const r=state.registrations.find(x=>x.id===id);r.status='APPROVED';toast('Peserta disetujui');render()}
+
+function trainingAttendance(t){
+ const regs=state.registrations.filter(r=>r.trainingId===t.id&&r.status==='APPROVED');
+ return `<div class="grid-2">
+ <div>
+  <div class="callout">
+   <div class="eyebrow">Sesi Absensi</div>
+   <h4 style="margin-top:8px">${state.attendanceOpen?'Absensi sedang dibuka':'Absensi belum dibuka'}</h4>
+   <p>${state.attendanceOpen?'Guru yang terdaftar dapat scan QR untuk check-in.':'Buka sesi pada saat pelatihan berlangsung.'}</p>
+   <div style="display:flex;gap:8px;margin-top:13px">${!state.attendanceOpen?`<button class="btn primary" onclick="state.attendanceOpen=true;toast('Sesi absensi dibuka');render()">Buka Absensi</button>`:`<button class="btn secondary" onclick="showQR()">Tampilkan QR</button><button class="btn danger" onclick="state.attendanceOpen=false;toast('Sesi absensi ditutup');render()">Tutup</button>`}</div>
+  </div>
+ </div>
+ <div>
+  <div class="info-grid" style="grid-template-columns:repeat(2,1fr)">${info('Peserta Approved',regs.length)}${info('Sudah Hadir',regs.filter(x=>x.attendance==='PRESENT').length)}</div>
+ </div></div>
+ <div class="sep"></div>
+ <div class="table-wrap"><table><thead><tr><th>Peserta</th><th>Sekolah</th><th>Check-in</th><th>Status</th><th></th></tr></thead><tbody>
+ ${regs.map(r=>`<tr><td><b>${r.name}</b></td><td>${r.school}</td><td>${r.attendance==='PRESENT'?'08:14 WIB':'—'}</td><td>${r.attendance?fmtStatus(r.attendance):'<span class="badge gray">Belum Absen</span>'}</td><td><button class="btn secondary sm" onclick="correctAttendance(${r.id})">Koreksi</button></td></tr>`).join('')}
+ </tbody></table></div>`;
+}
+function showQR(){openModal(`<div class="modal-head"><div><h2>QR Absensi</h2><p>Peserta scan QR ini menggunakan akun DiklatHub.</p></div><button class="close-btn" onclick="closeModal()">×</button></div><div class="modal-body" style="text-align:center"><div class="qr" style="width:220px;height:220px;background-size:40px 40px;border-width:14px"></div><h3>Absensi ${trainingById(state.activeTrainingId).title}</h3><p class="muted small">Token aktif selama sesi absensi dibuka.</p></div>`)}
+function correctAttendance(id){const r=state.registrations.find(x=>x.id===id);r.attendance=r.attendance==='PRESENT'?'ABSENT':'PRESENT';toast('Koreksi absensi disimpan dan dicatat di audit log');render()}
+
+function trainingCertificates(t){
+ const regs=state.registrations.filter(r=>r.trainingId===t.id);
+ const eligible=regs.filter(r=>r.status==='APPROVED'&&r.attendance==='PRESENT');
+ const certs=state.certificates.filter(c=>c.trainingId===t.id);
+ return `<div class="kpi-grid">${kpi('Eligible',eligible.length,'Memenuhi rule','✓')}${kpi('Generated',certs.length,'PDF dibuat','◇')}${kpi('Published',certs.filter(c=>c.status==='PUBLISHED').length,'Tersedia bagi guru','↗')}${kpi('Revoked',certs.filter(c=>c.status==='REVOKED').length,'Tidak valid','!')}</div>
+ <div class="callout"><h4>Certificate Automation</h4><p>Untuk pelatihan yang selesai, peserta Approved + Hadir akan otomatis mendapatkan nomor, PDF, dan QR verifikasi. Admin hanya melakukan review, reissue, atau revoke bila diperlukan.</p></div>
+ <div class="sep"></div>
+ <div class="table-wrap"><table><thead><tr><th>Peserta</th><th>Attendance</th><th>Eligibility</th><th>No. Sertifikat</th><th>Status</th><th></th></tr></thead><tbody>
+ ${regs.map(r=>{const c=certs.find(c=>c.name===r.name);const ok=r.status==='APPROVED'&&r.attendance==='PRESENT'&&t.status==='COMPLETED';return `<tr><td><b>${r.name}</b></td><td>${r.attendance?fmtStatus(r.attendance):'<span class="muted">—</span>'}</td><td>${ok?'<span class="badge green">Eligible</span>':'<span class="badge gray">Belum Eligible</span>'}</td><td>${c?c.number:'—'}</td><td>${c?fmtStatus(c.status):'<span class="muted">Pending</span>'}</td><td>${c?`<button class="btn secondary sm" onclick="viewCertificate(${c.id})">Lihat</button>`:'—'}</td></tr>`}).join('')}
+ </tbody></table></div>`;
+}
+
+function completeTraining(id){
+ const t=trainingById(id);t.status='COMPLETED';
+ const regs=state.registrations.filter(r=>r.trainingId===id&&r.status==='APPROVED'&&r.attendance==='PRESENT');
+ regs.forEach((r,i)=>{
+  if(!state.certificates.find(c=>c.trainingId===id&&c.name===r.name)){
+   state.certificates.push({id:Date.now()+i,trainingId:id,title:t.title,date:t.date,number:`421.5/${String(20+state.certificates.length+i).padStart(5,'0')}/DISDIK/2026`,status:'PUBLISHED',name:r.name,nip:r.name===state.user.name?state.user.nip:'1988XXXXXXXXXXXX',jp:t.jp});
+  }
+ });
+ toast(`Pelatihan selesai. ${regs.length} sertifikat otomatis diterbitkan.`);
+ render();
+}
+
+function trainingReport(t){
+ return `<div class="kpi-grid">${kpi('Kuota',t.quota,'Kapasitas','♙')}${kpi('Pendaftar',t.participants,'Total registrasi','▣')}${kpi('Hadir',state.registrations.filter(r=>r.trainingId===t.id&&r.attendance==='PRESENT').length,'Attendance','✓')}${kpi('Sertifikat',state.certificates.filter(c=>c.trainingId===t.id).length,'Terbit','◇')}</div>
+ <div class="callout"><h4>Export Laporan Pelatihan</h4><p>Rekap peserta, absensi, dan sertifikat dapat diekspor untuk kebutuhan administrasi Dinas.</p><div style="margin-top:12px;display:flex;gap:8px"><button class="btn secondary">Export Peserta</button><button class="btn secondary">Export Absensi</button><button class="btn secondary">Export Sertifikat</button></div></div>`;
+}
+
+function genericTablePage(type){
+ const cfg={
+ participants:['Peserta','Database pendaftar dari seluruh pelatihan.',`<thead><tr><th>Nama</th><th>Sekolah</th><th>Pelatihan</th><th>Status</th><th>Hadir</th></tr></thead><tbody>${state.registrations.map(r=>`<tr><td><b>${r.name}</b></td><td>${r.school}</td><td>${trainingById(r.trainingId).title}</td><td>${fmtStatus(r.status)}</td><td>${r.attendance?fmtStatus(r.attendance):'—'}</td></tr>`).join('')}</tbody>`],
+ attendance:['Absensi','Monitor sesi dan kehadiran pelatihan.',`<thead><tr><th>Pelatihan</th><th>Tanggal</th><th>Peserta</th><th>Hadir</th><th>Status Sesi</th></tr></thead><tbody>${state.trainings.map(t=>`<tr><td><b>${t.title}</b></td><td>${t.date}</td><td>${t.participants}</td><td>${state.registrations.filter(r=>r.trainingId===t.id&&r.attendance==='PRESENT').length}</td><td>${t.id===state.activeTrainingId&&state.attendanceOpen?'<span class="badge green">Open</span>':'<span class="badge gray">Closed</span>'}</td></tr>`).join('')}</tbody>`],
+ certificates:['Sertifikat','Monitoring penerbitan sertifikat otomatis.',`<thead><tr><th>Peserta</th><th>Pelatihan</th><th>Nomor</th><th>Tanggal</th><th>Status</th><th></th></tr></thead><tbody>${state.certificates.map(c=>`<tr><td><b>${c.name}</b></td><td>${c.title}</td><td>${c.number}</td><td>${c.date}</td><td>${fmtStatus(c.status)}</td><td><button class="btn secondary sm" onclick="viewCertificate(${c.id})">Lihat</button></td></tr>`).join('')}</tbody>`],
+ };
+ const c=cfg[type];
+ return shell(`<div class="page-head"><div><div class="eyebrow">Operasional</div><h1>${c[0]}</h1><p>${c[1]}</p></div><button class="btn secondary">Export Excel</button></div><section class="card pad"><div class="toolbar"><input class="input grow" placeholder="Cari data..."/><select class="select" style="width:180px"><option>Semua Status</option></select></div><div class="table-wrap"><table>${c[2]}</table></div></section>`,c[0]);
+}
+
+function teachersPage(){
+ return shell(`<div class="page-head"><div><div class="eyebrow">Master Data</div><h1>Guru & Tenaga Kependidikan</h1><p>Profil pengguna dan riwayat pelatihan.</p></div><button class="btn primary" onclick="toast('Form tambah guru dibuka')">＋ Tambah Guru</button></div>
+ <section class="card pad"><div class="toolbar"><input class="input grow" placeholder="Cari nama / NIP / sekolah..."/><select class="select" style="width:180px"><option>Semua Jenjang</option><option>SD</option><option>SMP</option></select></div>
+ <div class="table-wrap"><table><thead><tr><th>Nama</th><th>NIP/NUPTK</th><th>Sekolah</th><th>Jabatan</th><th>Riwayat</th><th></th></tr></thead><tbody>
+ <tr><td><b>Siti Rahma, S.Pd.</b></td><td>19870912••••</td><td>SMPN 1 Padang Panjang</td><td>Guru Mata Pelajaran</td><td>12 pelatihan</td><td><button class="btn secondary sm">Profil</button></td></tr>
+ <tr><td><b>Rizki Pratama, S.Pd.</b></td><td>19881102••••</td><td>SMPN 2 Padang Panjang</td><td>Guru</td><td>8 pelatihan</td><td><button class="btn secondary sm">Profil</button></td></tr>
+ <tr><td><b>Yuliana, S.Pd.</b></td><td>19900115••••</td><td>SDN 03 Padang Panjang</td><td>Guru Kelas</td><td>6 pelatihan</td><td><button class="btn secondary sm">Profil</button></td></tr>
+ </tbody></table></div></section>`,'Guru & Tendik');
+}
+
+function reportsPage(){
+ return shell(`<div class="page-head"><div><div class="eyebrow">Monitoring</div><h1>Laporan</h1><p>Rekap operasional pelatihan untuk administrasi Dinas.</p></div><button class="btn secondary">Export Report</button></div>
+ <div class="kpi-grid">${kpi('Total Pelatihan','24','Tahun 2026','▣')}${kpi('Total Peserta','846','Semua pelatihan','♙')}${kpi('Attendance','92%','Rata-rata','✓')}${kpi('Sertifikat','735','Terbit','◇')}</div>
+ <div class="grid-2">
+  <section class="card pad"><div class="section-title"><div><h3>Rekap per Pelatihan</h3><p>Ringkasan utama.</p></div></div>
+   <div class="table-wrap"><table><thead><tr><th>Pelatihan</th><th>Peserta</th><th>Hadir</th><th>Sertifikat</th></tr></thead><tbody>${state.trainings.map(t=>`<tr><td>${t.title}</td><td>${t.participants}</td><td>${state.registrations.filter(r=>r.trainingId===t.id&&r.attendance==='PRESENT').length}</td><td>${state.certificates.filter(c=>c.trainingId===t.id).length}</td></tr>`).join('')}</tbody></table></div>
+  </section>
+  <section class="card pad"><div class="section-title"><div><h3>Export Cepat</h3><p>Data operasional dasar.</p></div></div>
+   ${activity('Rekap Pelatihan','CSV / Excel')}${activity('Rekap Peserta','CSV / Excel')}${activity('Rekap Kehadiran','CSV / Excel')}${activity('Rekap Sertifikat','CSV / Excel')}
+  </section>
+ </div>`,'Laporan');
+}
+
+function settingsPage(){
+ return shell(`<div class="page-head"><div><div class="eyebrow">Konfigurasi</div><h1>Pengaturan</h1><p>Atur format nomor, template sertifikat, dan pejabat penandatangan.</p></div><button class="btn primary" onclick="toast('Pengaturan tersimpan')">Simpan</button></div>
+ <div class="grid-2">
+  <section class="card pad"><div class="section-title"><div><h3>Penomoran Sertifikat</h3><p>Format otomatis dan sequence.</p></div></div>
+   <div class="form-grid"><div class="field"><label>Prefix</label><input class="input" value="421.5"/></div><div class="field"><label>Suffix</label><input class="input" value="DISDIK"/></div><div class="field"><label>Padding Nomor</label><input class="input" value="5"/></div><div class="field"><label>Reset Sequence</label><select class="select"><option>Setiap tahun</option><option>Tidak pernah</option></select></div></div>
+   <div class="callout" style="margin-top:14px"><h4>Preview nomor</h4><p><b>421.5/00027/DISDIK/2026</b></p></div>
+  </section>
+  <section class="card pad"><div class="section-title"><div><h3>Pejabat Penandatangan</h3><p>Digunakan pada template sertifikat.</p></div></div>
+   <div class="field"><label>Nama</label><input class="input" value="Nama Kepala Dinas"/></div><div class="field" style="margin-top:12px"><label>Jabatan</label><input class="input" value="Kepala Dinas Pendidikan"/></div><div class="field" style="margin-top:12px"><label>Template</label><select class="select"><option>Template Resmi DiklatHub</option></select></div>
+  </section>
+ </div>`,'Pengaturan');
+}
+
+function teacherDashboard(){
+ const myUpcoming=state.trainings.find(t=>t.id===1);
+ return shell(`
+ <div class="page-head"><div><div class="eyebrow">Portal Guru / Tendik</div><h1>Selamat Datang, ${state.user.name}</h1><p>Temukan pelatihan, kelola keikutsertaan, dan akses sertifikat Anda.</p></div><button class="btn primary" onclick="setTeacherPage('catalogue')">Lihat Pelatihan</button></div>
+ <div class="kpi-grid">${kpi('Pelatihan Diikuti','12','Riwayat Anda','▣')}${kpi('Mendatang','2','Sudah terdaftar','◎')}${kpi('Sertifikat','8','Tersimpan digital','◇')}${kpi('Total JP','64','Akumulasi pelatihan','✓')}</div>
+ <div class="grid-2">
+  <section>
+   <div class="callout" style="margin-bottom:14px"><div class="eyebrow">Yang Perlu Anda Perhatikan</div><h4 style="margin-top:8px">Pelatihan mendatang • ${myUpcoming.date}</h4><p>${myUpcoming.title} — ${myUpcoming.start} WIB, ${myUpcoming.location}.</p><button class="btn primary sm" style="margin-top:12px" onclick="teacherTrainingDetail(${myUpcoming.id})">Lihat Pelatihan</button></div>
+   <div class="card pad"><div class="section-title"><div><h3>Pelatihan Saya</h3><p>Status terbaru keikutsertaan Anda.</p></div><span class="link" onclick="setTeacherPage('my-trainings')">Lihat semua →</span></div>
+    <div class="table-wrap"><table><thead><tr><th>Pelatihan</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>
+      <tr><td><b>${trainingById(1).title}</b></td><td>${trainingById(1).date}</td><td><span class="badge green">Terdaftar</span></td></tr>
+      <tr><td><b>${trainingById(4).title}</b></td><td>${trainingById(4).date}</td><td><span class="badge gray">Selesai</span></td></tr>
+    </tbody></table></div>
+   </div>
+  </section>
+  <section class="card pad">
+   <div class="section-title"><div><h3>Sertifikat Terbaru</h3><p>Tersedia untuk download & print.</p></div></div>
+   ${state.certificates.filter(c=>c.name===state.user.name).slice(0,2).map(c=>certificateCard(c)).join('') || '<div class="empty">Belum ada sertifikat.</div>'}
+   <div class="sep"></div><div class="section-title"><div><h3>Akses Cepat</h3></div></div>
+   <div class="grid-3" style="grid-template-columns:1fr"><button class="btn secondary block" onclick="setTeacherPage('catalogue')">Pelatihan Tersedia</button><button class="btn secondary block" onclick="setTeacherPage('my-trainings')">Pelatihan Saya</button><button class="btn secondary block" onclick="setTeacherPage('my-certificates')">Sertifikat Saya</button></div>
+  </section>
+ </div>`, 'Dashboard');
+}
+
+function certificateCard(c){
+ return `<div class="cert-card card" style="box-shadow:none;margin-bottom:10px"><span class="badge green">Sertifikat Terbit</span><h3>${c.title}</h3><p>${c.date}<br/>No. ${c.number}</p><div class="cert-actions"><button class="btn secondary sm" onclick="viewCertificate(${c.id})">Lihat</button><button class="btn primary sm" onclick="toast('PDF sertifikat siap diunduh')">Download PDF</button></div></div>`;
+}
+
+function teacherCatalogue(){
+ return shell(`<div class="page-head"><div><div class="eyebrow">Katalog</div><h1>Pelatihan Tersedia</h1><p>Temukan program pengembangan kompetensi yang sesuai.</p></div></div>
+ <div class="toolbar"><input class="input grow" placeholder="Cari pelatihan, topik, atau narasumber..."/><select class="select" style="width:170px"><option>Semua Kategori</option><option>Pedagogik</option><option>Teknologi</option></select><select class="select" style="width:150px"><option>Semua Mode</option><option>Offline</option><option>Online</option><option>Hybrid</option></select></div>
+ <div class="training-cards">${state.trainings.filter(t=>t.status==='REGISTRATION_OPEN').map(t=>teacherTrainingCard(t)).join('')}</div>`, 'Pelatihan Tersedia');
+}
+function teacherTrainingCard(t){
+ const r=myRegistration(t.id);
+ return `<article class="card training-card"><div><span class="badge green">${t.category}</span><h3>${t.title}</h3><div class="training-meta"><div class="meta-row">📅 ${t.date} • ${t.start}–${t.end}</div><div class="meta-row">📍 ${t.location}</div><div class="meta-row">◉ ${t.mode}</div></div></div><div class="capacity"><div class="capacity-row"><span>Kuota</span><span>${t.participants}/${t.quota}</span></div><div class="bar"><i style="width:${Math.min(100,t.participants/t.quota*100)}%"></i></div><div class="training-actions"><button class="btn secondary" onclick="teacherTrainingDetail(${t.id})">Lihat Detail</button>${r?`<button class="btn ghost" disabled>✓ Terdaftar</button>`:`<button class="btn primary" onclick="registerTraining(${t.id})">Daftar</button>`}</div></div></article>`;
+}
+
+function teacherTrainingDetail(id){
+ const t=trainingById(id);const r=myRegistration(id);
+ openModal(`<div class="modal-head"><div><div class="eyebrow">${t.category}</div><h2>${t.title}</h2><p>${t.date} • ${t.start}–${t.end} WIB • ${t.location}</p></div><button class="close-btn" onclick="closeModal()">×</button></div>
+ <div class="modal-body">
+  <div class="info-grid">${info('Mode',t.mode)}${info('Kuota',`${t.participants}/${t.quota}`)}${info('Total JP',`${t.jp} JP`)}</div>
+  <div class="sep"></div><h3 style="font-size:14px">Tentang Pelatihan</h3><p class="muted small" style="line-height:1.7">${t.desc}</p>
+  <h3 style="font-size:14px;margin-top:18px">Narasumber</h3><p class="small"><b>${t.speaker}</b><br/><span class="muted">${t.institution}</span></p>
+  <h3 style="font-size:14px;margin-top:18px">Persyaratan</h3><p class="small muted">${t.requirements}</p>
+  <h3 style="font-size:14px;margin-top:18px">Agenda</h3>
+  <div class="timeline"><div class="timeline-row"><time>08.00</time><div>Registrasi & pembukaan</div></div><div class="timeline-row"><time>09.00</time><div>Materi utama dan studi kasus</div></div><div class="timeline-row"><time>13.00</time><div>Praktik / workshop</div></div><div class="timeline-row"><time>15.30</time><div>Refleksi & penutup</div></div></div>
+  <div class="sep"></div>${r?`<div class="callout"><h4>✓ Anda sudah terdaftar</h4><p>Status pendaftaran: ${r.status==='APPROVED'?'Disetujui':'Menunggu persetujuan'}.</p></div>`:`<button class="btn primary block" onclick="registerTraining(${t.id})">Daftar Pelatihan</button>`}
+ </div>`);
+}
+
+function registerTraining(id){
+ const t=trainingById(id);
+ openModal(`<div class="modal-head"><div><h2>Konfirmasi Pendaftaran</h2><p>${t.title}</p></div><button class="close-btn" onclick="closeModal()">×</button></div>
+ <div class="modal-body"><div class="callout"><div class="eyebrow">Data Pendaftar</div><h4 style="margin-top:8px">${state.user.name}</h4><p>NIP ${state.user.nip}<br/>${state.user.school}<br/>${state.user.position}</p></div>
+ <p class="small muted" style="line-height:1.6">Data profil digunakan otomatis. Anda tidak perlu mengisi ulang nama, NIP, sekolah, atau jabatan.</p>
+ <div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn secondary" onclick="closeModal()">Batal</button><button class="btn primary" onclick="confirmRegister(${t.id})">Konfirmasi Pendaftaran</button></div></div>`);
+}
+function confirmRegister(id){
+ if(myRegistration(id)){toast('Anda sudah terdaftar');closeModal();return}
+ const t=trainingById(id);state.registrations.push({id:Date.now(),trainingId:id,name:state.user.name,school:state.user.school,status:'APPROVED',attendance:null});t.participants++;
+ closeModal();toast('Pendaftaran berhasil!');render();
+}
+
+function myTrainings(){
+ const regs=state.registrations.filter(r=>r.name===state.user.name);
+ return shell(`<div class="page-head"><div><div class="eyebrow">Aktivitas Saya</div><h1>Pelatihan Saya</h1><p>Pantau status pendaftaran, absensi, dan penyelesaian pelatihan.</p></div></div>
+ <div class="tabs"><button class="tab active">Semua</button><button class="tab">Terdaftar</button><button class="tab">Berlangsung</button><button class="tab">Selesai</button></div>
+ <div class="training-cards">${regs.map(r=>{const t=trainingById(r.trainingId);return `<article class="card training-card"><div>${fmtStatus(t.status)}<h3>${t.title}</h3><div class="training-meta"><div class="meta-row">📅 ${t.date}</div><div class="meta-row">📍 ${t.location}</div><div class="meta-row">Status pendaftaran: ${r.status}</div></div></div><div class="capacity">${state.attendanceOpen&&t.id===state.activeTrainingId&&r.status==='APPROVED'&&!r.attendance?`<div class="callout"><h4>Absensi sedang dibuka</h4><p>Scan QR untuk mencatat kehadiran.</p><button class="btn primary block" style="margin-top:10px" onclick="teacherCheckin(${r.id})">SCAN QR ABSENSI</button></div>`:r.attendance==='PRESENT'?`<div class="callout"><h4>✓ Absensi Berhasil</h4><p>Hadir • 08.14 WIB</p></div>`:t.status==='COMPLETED'?`<div class="callout"><h4>Pelatihan Selesai</h4><p>${state.certificates.some(c=>c.trainingId===t.id&&c.name===state.user.name)?'Sertifikat Anda sudah tersedia.':'Sertifikat belum tersedia / sedang diproses.'}</p></div>`:`<button class="btn secondary block" onclick="teacherTrainingDetail(${t.id})">Lihat Detail</button>`}</div></article>`}).join('')}</div>`, 'Pelatihan Saya');
+}
+function teacherCheckin(regId){const r=state.registrations.find(x=>x.id===regId);r.attendance='PRESENT';toast('Absensi berhasil dicatat • 08.14 WIB');render()}
+
+function teacherCertificates(){
+ const cs=state.certificates.filter(c=>c.name===state.user.name);
+ return shell(`<div class="page-head"><div><div class="eyebrow">Dokumen Saya</div><h1>Sertifikat Saya</h1><p>Sertifikat diterbitkan otomatis oleh sistem. Anda tinggal melihat, download, atau print.</p></div></div>
+ <div class="callout" style="margin-bottom:16px"><h4>Bagaimana sertifikat terbit?</h4><p>Setelah pelatihan selesai, sistem memvalidasi pendaftaran dan kehadiran. Peserta yang memenuhi syarat otomatis mendapatkan nomor, PDF, dan QR verifikasi.</p></div>
+ <div class="grid-3">${cs.map(c=>certificateCard(c)).join('')}${cs.length?`<div class="card cert-card"><span class="badge amber">Sedang Diproses</span><h3>Pelatihan yang Baru Selesai</h3><p>Sertifikat akan muncul otomatis setelah rule kehadiran tervalidasi.</p></div>`:''}</div>`, 'Sertifikat Saya');
+}
+
+function viewCertificate(id){
+ const c=state.certificates.find(x=>x.id===Number(id)); if(!c)return;
+ openModal(`<div class="modal-head"><div><h2>Detail Sertifikat</h2><p>${c.number}</p></div><button class="close-btn" onclick="closeModal()">×</button></div>
+ <div class="modal-body printable"><div class="cert-preview">
+  <div style="font-size:11px;font-weight:900">PEMERINTAH KOTA PADANG PANJANG<br/>DINAS PENDIDIKAN</div>
+  <h1>SERTIFIKAT</h1><div class="cert-no">No. ${c.number}</div>
+  <p class="muted small" style="margin-top:26px">Diberikan kepada</p><h2>${c.name}</h2><div class="small">NIP. ${c.nip}</div>
+  <p class="small muted" style="margin-top:28px">Atas partisipasinya sebagai <b>PESERTA</b> dalam</p><h3 style="font-size:18px;margin:10px auto;max-width:600px">${c.title}</h3>
+  <p class="small muted">${c.date} • ${c.jp} JP<br/>Dinas Pendidikan Kota Padang Panjang</p>
+  <div class="qr"></div><div class="small muted" style="margin-top:8px">QR Verifikasi Sertifikat</div>
+ </div>
+ <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:15px" class="no-print"><button class="btn secondary" onclick="toast('PDF sertifikat siap diunduh')">Download PDF</button><button class="btn primary" onclick="window.print()">Print</button><button class="btn ghost" onclick="verifyCertificate(${c.id})">Verifikasi</button></div></div>`);
+}
+function verifyCertificate(id){
+ const c=state.certificates.find(x=>x.id===Number(id));closeModal();
+ openModal(`<div class="modal-head"><div><h2>Verifikasi Sertifikat</h2><p>DiklatHub Padang Panjang</p></div><button class="close-btn" onclick="closeModal()">×</button></div><div class="modal-body">
+ <div class="verify-status">✓ ${c.status==='REVOKED'?'REVOKED / TIDAK VALID':'VALID — Sertifikat terverifikasi'}</div>
+ <div class="info-grid" style="grid-template-columns:1fr 1fr">${info('Nama Peserta',c.name)}${info('No. Sertifikat',c.number)}${info('Pelatihan',c.title)}${info('Tanggal',c.date)}</div>
+ <p class="small muted" style="margin-top:15px">Halaman verifikasi publik hanya menampilkan data yang diperlukan untuk memvalidasi sertifikat.</p></div>`);
+}
+
+function profilePage(){
+ return shell(`<div class="page-head"><div><div class="eyebrow">Akun Saya</div><h1>Profil Saya</h1><p>Data utama yang digunakan untuk pendaftaran dan sertifikat.</p></div><button class="btn primary" onclick="toast('Perubahan profil disimpan')">Simpan Perubahan</button></div>
+ <div class="grid-2">
+ <section class="card pad"><div class="profile-header"><div class="profile-avatar">SR</div><div><h3 style="margin:0 0 5px">${state.user.name}</h3><p class="small muted" style="margin:0">${state.user.position}<br/>${state.user.school}</p></div></div><div class="sep"></div>
+ <div class="form-grid"><div class="field"><label>Nama Lengkap</label><input class="input" value="${state.user.name}"/></div><div class="field"><label>NIP</label><input class="input" value="${state.user.nip}"/></div><div class="field"><label>Email</label><input class="input" value="${state.user.email}"/></div><div class="field"><label>No. HP</label><input class="input" value="${state.user.phone}"/></div><div class="field"><label>Sekolah</label><input class="input" value="${state.user.school}"/></div><div class="field"><label>Jabatan</label><input class="input" value="${state.user.position}"/></div></div></section>
+ <section class="card pad"><div class="section-title"><div><h3>Ringkasan Kompetensi</h3><p>Digital training record.</p></div></div><div class="kpi-grid" style="grid-template-columns:1fr 1fr">${kpi('Pelatihan','12','Riwayat','▣')}${kpi('Sertifikat','8','Terbit','◇')}${kpi('Total JP','64','Akumulasi','✓')}${kpi('Mendatang','2','Terdaftar','◎')}</div></section></div>`, 'Profil Saya');
+}
+
+function helpPage(){
+ return shell(`<div class="page-head"><div><div class="eyebrow">Bantuan</div><h1>Pusat Bantuan</h1><p>Panduan singkat penggunaan DiklatHub.</p></div></div>
+ <div class="grid-2"><section class="card pad faq"><details open><summary>Bagaimana cara mendaftar pelatihan?</summary><p>Buka Pelatihan Tersedia, pilih kegiatan, lalu klik Daftar Pelatihan. Sistem menggunakan data profil Anda, sehingga tidak perlu mengisi ulang nama, NIP, sekolah, dan jabatan.</p></details><details><summary>Bagaimana cara melakukan absensi?</summary><p>Pada hari H, admin membuka sesi absensi. Tombol Scan QR Absensi akan muncul di Pelatihan Saya. Setelah scan valid, status menjadi Hadir.</p></details><details><summary>Kenapa sertifikat saya belum tersedia?</summary><p>Sertifikat terbit otomatis setelah pelatihan selesai dan syarat kehadiran terpenuhi. Bila status masih diproses, Anda tidak perlu menekan tombol generate.</p></details><details><summary>Bagaimana jika data profil salah?</summary><p>Perbarui data yang diizinkan pada Profil Saya atau hubungi Admin DiklatHub untuk data yang membutuhkan verifikasi.</p></details></section>
+ <section class="card pad"><div class="section-title"><div><h3>Hubungi Admin</h3><p>Dinas Pendidikan Kota Padang Panjang</p></div></div><div class="callout"><h4>Butuh bantuan lebih lanjut?</h4><p>Silakan hubungi Admin DiklatHub melalui kanal resmi Dinas Pendidikan.</p><button class="btn primary sm" style="margin-top:12px">Hubungi Admin</button></div></section></div>`, 'Bantuan');
+}
+
+function render(){
+ const root=document.getElementById('root');
+ if(!state.loggedIn){root.innerHTML=loginView();return}
+ if(state.portal==='admin'){
+  const p=state.page;
+  if(p==='dashboard')root.innerHTML=adminDashboard();
+  else if(p==='trainings')root.innerHTML=adminTrainings();
+  else if(p==='training-detail')root.innerHTML=trainingDetail();
+  else if(['participants','attendance','certificates'].includes(p))root.innerHTML=genericTablePage(p);
+  else if(p==='teachers')root.innerHTML=teachersPage();
+  else if(p==='reports')root.innerHTML=reportsPage();
+  else if(p==='settings')root.innerHTML=settingsPage();
+ } else {
+  const p=state.teacherPage;
+  if(p==='teacher-dashboard')root.innerHTML=teacherDashboard();
+  else if(p==='catalogue')root.innerHTML=teacherCatalogue();
+  else if(p==='my-trainings')root.innerHTML=myTrainings();
+  else if(p==='my-certificates')root.innerHTML=teacherCertificates();
+  else if(p==='profile')root.innerHTML=profilePage();
+  else if(p==='help')root.innerHTML=helpPage();
+ }
+ window.scrollTo({top:0});
+}
+render();
 </script>
-</body></html>
+</body>
+</html>
